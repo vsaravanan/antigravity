@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kong-lab
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo
+  namespace: kong-lab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: echo
+  template:
+    metadata:
+      labels:
+        app: echo
+    spec:
+      containers:
+        - name: echo
+          image: ealen/echo-server:latest
+          ports:
+            - name: http
+              containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: echo
+  namespace: kong-lab
+spec:
+  selector:
+    app: echo
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: echo-rate-limit
+  namespace: kong-lab
+plugin: rate-limiting
+config:
+  minute: 5
+  policy: local
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: echo-key-auth
+  namespace: kong-lab
+plugin: key-auth
+config:
+  key_names:
+    - apikey
+  hide_credentials: false
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: demo-client-key
+  namespace: kong-lab
+  labels:
+    konghq.com/credential: key-auth
+stringData:
+  key: learning-key-123
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: demo-client
+  namespace: kong-lab
+  annotations:
+    # config.kubernetes.io/depends-on: /namespaces/kong-lab/Secret/demo-client-key
+    kubernetes.io/ingress.class: kong
+username: demo-client
+credentials:
+  - demo-client-key
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: echo
+  namespace: kong-lab
+  annotations:
+    konghq.com/strip-path: 'true'
+    konghq.com/plugins: echo-rate-limit,echo-key-auth
+spec:
+  ingressClassName: kong
+  rules:
+    - http:
+        paths:
+          - path: /echo
+            pathType: Prefix
+            backend:
+              service:
+                name: echo
+                port:
+                  number: 80

@@ -1,0 +1,42 @@
+# manifests/2700-websocket-echo.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ws-echo
+  namespace: kong-lab
+spec:
+  replicas: 1
+  selector: { matchLabels: { app: ws-echo } }
+  template:
+    metadata: { labels: { app: ws-echo } }
+    spec:
+      containers:
+        - name: ws-echo
+          image: jmalloc/echo-server
+          ports: [{ containerPort: 8080 }]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ws-echo
+  namespace: kong-lab
+spec:
+  selector: { app: ws-echo }
+  ports: [{ port: 8080, targetPort: 8080 }]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ws-echo-ingress
+  namespace: kong-lab
+  annotations:
+    konghq.com/strip-path: 'true'
+spec:
+  ingressClassName: kong
+  rules:
+    - http:
+        paths:
+          - path: /ws
+            pathType: Prefix
+            backend:
+              service: { name: ws-echo, port: { number: 8080 } }

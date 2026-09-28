@@ -1,0 +1,74 @@
+# 2500-postgres-adminer.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-external
+  namespace: kong-lab
+spec:
+  ports:
+    - port: 5432
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: postgres-external
+  namespace: kong-lab
+subsets:
+  - addresses:
+      - ip: 192.168.100.1
+    ports:
+      - port: 5432
+---
+apiVersion: configuration.konghq.com/v1beta1
+kind: TCPIngress
+metadata:
+  name: postgres-tcp
+  namespace: kong-lab
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  rules:
+    - port: 5432
+      backend:
+        serviceName: postgres-external
+        servicePort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adminer-external
+  namespace: kong-lab
+spec:
+  ports:
+    - port: 8080
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: adminer-external
+  namespace: kong-lab
+subsets:
+  - addresses:
+      - ip: 192.168.100.1
+    ports:
+      - port: 8081
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adminer-ingress
+  namespace: kong-lab
+  annotations:
+    konghq.com/strip-path: 'true'
+spec:
+  ingressClassName: kong
+  rules:
+    - http:
+        paths:
+          - path: /adminer
+            pathType: Prefix
+            backend:
+              service:
+                name: adminer-external
+                port: { number: 8080 }

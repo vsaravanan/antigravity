@@ -1,0 +1,114 @@
+# 2600-keycloak.yaml
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: keycloak
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: keycloak-pv
+spec:
+  capacity: { storage: 5Gi }
+  accessModes: ['ReadWriteOnce']
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: keycloak-local
+  hostPath: { path: /mnt/keycloak-data }
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - {
+                key: kubernetes.io/hostname,
+                operator: In,
+                values: ['k8master'],
+              }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: keycloak-pvc
+  namespace: keycloak
+spec:
+  accessModes: ['ReadWriteOnce']
+  storageClassName: keycloak-local
+  resources: { requests: { storage: 5Gi } }
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak-admin
+  namespace: keycloak
+type: Opaque
+stringData:
+  KEYCLOAK_ADMIN: admin
+  KEYCLOAK_ADMIN_PASSWORD: admin123
+  KC_DB_URL: jdbc:postgresql://192.168.100.1:5432/keycloak
+  KC_DB_USERNAME: keycloak
+  KC_DB_PASSWORD: keycloak123
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: keycloak
+  namespace: keycloak
+spec:
+  serviceName: keycloak
+  replicas: 1
+  selector: { matchLabels: { app: keycloak } }
+  template:
+    metadata: { labels: { app: keycloak } }
+    spec:
+      securityContext:
+        fsGroup: 1000
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:26.0
+          args:
+            - 'start'
+            - '--http-enabled=true'
+            - '--hostname-strict=false'
+            - '--proxy-headers=xforwarded'
+          envFrom: [{ secretRef: { name: keycloak-admin } }]
+          env: [{ name: KC_DB, value: postgres }]
+          ports: [{ containerPort: 8080, name: http }]
+          volumeMounts:
+            - name: data
+              mountPath: /opt/keycloak/data
+            - name: keycloak-tx-logs
+              mountPath: /opt/keycloak/data/transaction-logs
+      volumes:
+        - name: data
+          persistentVolumeClaim: { claimName: keycloak-pvc }
+        - name: keycloak-tx-logs
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  namespace: keycloak
+spec:
+  selector: { app: keycloak }
+  ports: [{ port: 8080, targetPort: 8080 }]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: keycloak-ingress
+  namespace: keycloak
+  annotations: { konghq.com/strip-path: 'true' }
+spec:
+  ingressClassName: kong
+  rules:
+    - http:
+        paths:
+          - path: /auth
+            pathType: Prefix
+            backend:
+              service: { name: keycloak, port: { number: 8080 } }

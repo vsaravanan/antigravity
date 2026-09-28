@@ -1,0 +1,50 @@
+    Type                                                                               Name                                                         Plan       Info
+ +   pulumi:pulumi:Stack                                                                kong-learning-lab-dev                                        create
+ +   ├─ kubernetes:yaml/v2:ConfigFile                                                   observability                                                create
+ +   ├─ kubernetes:yaml/v2:ConfigFile                                                   kongLesson                                                   create
+ +   │  ├─ kubernetes:core/v1:Namespace                                                 kongLesson:kong-lab                                          create
+ +   │  ├─ kubernetes:core/v1:Service                                                   kongLesson:kong-lab/echo                                     create
+ +   │  └─ kubernetes:apps/v1:Deployment                                                kongLesson:kong-lab/echo                                     create
+ +   ├─ kubernetes:yaml/v2:ConfigFile                                                   postgresAdminerLesson                                        create
+ +   │  ├─ kubernetes:core/v1:Endpoints                                                 postgresAdminerLesson:kong-lab/adminer-external              create     1 warning
+ +   │  ├─ kubernetes:networking.k8s.io/v1:Ingress                                      postgresAdminerLesson:kong-lab/adminer-ingress               create
+ +   │  ├─ kubernetes:core/v1:Endpoints                                                 postgresAdminerLesson:kong-lab/postgres-external             create     1 warning
+ +   │  ├─ kubernetes:core/v1:Service                                                   postgresAdminerLesson:kong-lab/postgres-external             create
+ +   │  ├─ kubernetes:core/v1:Service                                                   postgresAdminerLesson:kong-lab/adminer-external              create
+ +   │  └─ kubernetes:configuration.konghq.com/v1beta1:TCPIngress                       postgresAdminerLesson:kong-lab/postgres-tcp                  create
+ +   ├─ kubernetes:yaml/v2:ConfigFile                                                   gatewayApiCrds                                               create
+ +   │  ├─ kubernetes:admissionregistration.k8s.io/v1:ValidatingAdmissionPolicy         gatewayApiCrds:safe-upgrades.gateway.networking.k8s.io       create
+ +   │  ├─ kubernetes:admissionregistration.k8s.io/v1:ValidatingAdmissionPolicyBinding  gatewayApiCrds:safe-upgrades.gateway.networking.k8s.io       create
+ +   │  ├─ kubernetes:apiextensions.k8s.io/v1:CustomResourceDefinition                  gatewayApiCrds:gatewayclasses.gateway.networking.k8s.io      create
+ +   │  ├─ kubernetes:apiextensions.k8s.io/v1:CustomResourceDefinition                  gatewayApiCrds:referencegrants.gateway.networking.k8s.io     create
+ +   │  ├─ kubernetes:apiextensions.k8s.io/v1:CustomResourceDefinition                  gatewayApiCrds:listenersets.gateway.networking.k8s.io        create
+ +   │  ├─ kubernetes:apiextensions.k8s.io/v1:CustomResourceDefinition                  gatewayApiCrds:backendtlspolicies.gateway.networking.k8s.io  create
+ +   │  ├─ kubernetes:apiextensions.k8s.io/v1:CustomResourceDefinition                  gatewayApiCrds:grpcroutes.gateway.networking.k8s.io          create
+ +   │  ├─ kubernetes:apiextensions.k8s.io/v1:CustomResourceDefinition                  gatewayApiCrds:tlsroutes.gateway.networking.k8s.io           create
+ +   │  ├─ kubernetes:apiextensions.k8s.io/v1:CustomResourceDefinition                  gatewayApiCrds:gateways.gateway.networking.k8s.io            create
+ +   │  └─ kubernetes:apiextensions.k8s.io/v1:CustomResourceDefinition                  gatewayApiCrds:httproutes.gateway.networking.k8s.io          create
+ +   ├─ kubernetes:core/v1:Namespace                                                    kongNs                                                       create
+ +   ├─ kubernetes:helm.sh/v3:Release                                                   kongRelease                                                  create
+ +   ├─ kubernetes:yaml/v2:ConfigFile                                                   keycloakLesson                                               create
+ +   │  ├─ kubernetes:core/v1:Namespace                                                 keycloakLesson:keycloak                                      create
+ +   │  ├─ kubernetes:core/v1:PersistentVolume                                          keycloakLesson:keycloak-pv                                   create
+ +   │  ├─ kubernetes:core/v1:Secret                                                    keycloakLesson:keycloak/keycloak-admin                       create
+ +   │  ├─ kubernetes:networking.k8s.io/v1:Ingress                                      keycloakLesson:keycloak/keycloak-ingress                     create
+ +   │  ├─ kubernetes:core/v1:Service                                                   keycloakLesson:keycloak/keycloak                             create
+ +   │  ├─ kubernetes:apps/v1:StatefulSet                                               keycloakLesson:keycloak/keycloak                             create
+ +   │  └─ kubernetes:core/v1:PersistentVolumeClaim                                     keycloakLesson:keycloak/keycloak-pvc                         create
+ +   └─ kubernetes:yaml/v2:ConfigFile                                                   gatewayClassAndGateway                                       create
+ +      ├─ kubernetes:gateway.networking.k8s.io/v1:Gateway                              gatewayClassAndGateway:kong/kong                             create
+ +      └─ kubernetes:gateway.networking.k8s.io/v1:GatewayClass                         gatewayClassAndGateway:kong                                  create
+
+
+
+Outputs:
+    activeObservabilityManifest: "yaml/00-empty-list.yaml"
+    activeRouteManifest        : "yaml/00-echo-app.yaml"
+    echoUrl                    : "https://192.168.100.240/echo"
+    kongNamespace              : "kong"
+    prometheusUrl              : "https://192.168.100.240/prometheus"
+    testCommand                : "curl -i -k https://192.168.100.240/echo"
+
+

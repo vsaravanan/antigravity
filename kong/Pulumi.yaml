@@ -1,0 +1,125 @@
+# pulumi state unprotect 'urn:pulumi:dev::kong-learning-lab::kubernetes:core/v1:Namespace::kongNs'
+# pulumi state unprotect 'urn:pulumi:kong-learning-lab-dev::kong-learning-lab::kubernetes:core/v1:Namespace::kongNs'
+
+name: kong-learning-lab
+runtime: yaml
+description: Kong Gateway learning lab using Pulumi YAML and Kubernetes YAML manifests.
+
+config:
+  routeManifest:
+    type: string
+    default: yaml/01-echo-route.yaml
+  observabilityManifest:
+    type: string
+    default: yaml/00-empty-list.yaml
+  postgresAdminerManifest:
+    type: string
+    default: manifests/2500-postgres-adminer.yaml
+  keycloakManifest:
+    type: string
+    default: manifests/2600-keycloak.yaml
+  gatewayClassManifest:
+    type: string
+    default: manifests/2400-gateway-class-and-gateway.yaml
+  websocketManifest:
+    type: string
+    default: manifests/2700-websocket-echo.yaml
+  gatewayApiCrdsUrl:
+    type: string
+    default: https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.5.1/standard-install.yaml
+  proxyBaseUrl:
+    type: string
+    default: https://192.168.100.240
+
+resources:
+  websocketEcho:
+    type: kubernetes:yaml/v2:ConfigFile
+    properties:
+      file: ${websocketManifest}
+
+  gatewayApiCrds:
+    type: kubernetes:yaml/v2:ConfigFile
+    properties:
+      file: ${gatewayApiCrdsUrl}
+
+  kongNs:
+    type: kubernetes:core/v1:Namespace
+    properties:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        labels:
+          kubernetes.io/metadata.name: kong
+        name: kong
+      spec:
+        finalizers:
+          - kubernetes
+
+  kongRelease:
+    type: kubernetes:helm.sh/v3:Release
+    properties:
+      name: kong
+      chart: ingress
+      namespace: ${kongNs.metadata.name}
+      repositoryOpts:
+        repo: https://charts.konghq.com
+      values:
+        gateway:
+          proxy:
+            type: LoadBalancer
+            externalTrafficPolicy: Local
+
+  # Drop Kong-fronting for raw Postgres. Remove the stream/stream_listen values
+  # and the TCPIngress object, keep direct-IP access for psql/Keycloak,
+  # keep Adminer on Kong HTTP. Simplest, and nothing here is actually broken once removed.
+
+  #     stream:
+  #       - containerPort: 5432
+  #         servicePort: 5432
+  #         protocol: TCP
+  #   env:
+  #     stream_listen: '0.0.0.0:5432'
+  # ingressController:
+  #   env:
+  #     stream_port_map: '5432:5432'
+
+  gatewayClassAndGateway:
+    type: kubernetes:yaml/v2:ConfigFile
+    properties:
+      file: ${gatewayClassManifest}
+    options:
+      dependsOn:
+        - ${gatewayApiCrds}
+        - ${kongRelease}
+
+  kongLesson:
+    type: kubernetes:yaml/v2:ConfigFile
+    properties:
+      file: ${routeManifest}
+  postgresAdminerLesson:
+    type: kubernetes:yaml/v2:ConfigFile
+    properties:
+      file: ${postgresAdminerManifest}
+  keycloakLesson:
+    type: kubernetes:yaml/v2:ConfigFile
+    properties:
+      file: ${keycloakManifest}
+    options:
+      dependsOn:
+        - ${kongRelease}
+  observability:
+    type: kubernetes:yaml/v2:ConfigFile
+    properties:
+      file: ${observabilityManifest}
+
+outputs:
+  kongNamespace: ${kongNs.metadata.name}
+  activeRouteManifest: ${routeManifest}
+  activeObservabilityManifest: ${observabilityManifest}
+  echoUrl: ${proxyBaseUrl}/echo
+  prometheusUrl: ${proxyBaseUrl}/prometheus
+  curlEcho: curl -i -k ${proxyBaseUrl}/echo
+  curlAdminer: curl -i -k ${proxyBaseUrl}/adminer
+  curlKeycloak: curl -i -k ${proxyBaseUrl}/auth
+  postgresDirectTcp: psql -h 192.168.50.84 -p 5432 -U keycloak -d keycloak -c '\dt'
+  postgresKongTcp: psql -h 192.168.100.1 -p 5432 -U keycloak -d keycloak -c '\dt'
