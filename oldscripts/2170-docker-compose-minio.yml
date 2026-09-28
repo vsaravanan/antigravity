@@ -1,0 +1,38 @@
+# 2170-docker-compose-minio.yml
+# docker compose -f 2170-docker-compose-minio.yml up -d
+# MinIO: S3-compatible object storage, backing Pulumi's self-managed state.
+# createbuckets: one-shot job, creates the pulumi-state bucket then exits —
+#        this is normal, `docker compose ps` showing it as "Exited (0)" is success.
+# 2170-docker-compose.yml — run on the HOST
+# 9326 - 7685 = 1641 MB growth on host.vdi
+# 6706 - 6479 = 227 MB growth on k8master.vdi
+# 3821 - 3776 = 45 MB growth on k8worker1.vdi
+name: minio-stack
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: pulumiadmin
+      MINIO_ROOT_PASSWORD: pulumipwd
+    command: server /data --console-address ":9001"
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - /srv/minio-data:/data
+
+  createbuckets:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until (/usr/bin/mc alias set local http://minio:9000 pulumiadmin pulumipwd) do echo 'waiting for minio...'; sleep 1; done;
+      /usr/bin/mc mb local/pulumi-state --ignore-existing;
+      exit 0;
+      "
+networks:
+  default:
+    name: minio-net

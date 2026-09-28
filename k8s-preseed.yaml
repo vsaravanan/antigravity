@@ -1,0 +1,78 @@
+# k8s-lxd-preseed.yaml
+# Place at /root/k8s-lxd-preseed.yaml before running 01-create-containers.sh.
+# This avoids `lxd init`'s normal interactive flow (and its tendency to
+# auto-create a "default" pool wherever it likes) — instead we control
+# exactly which ZFS pool backs what.
+config: {}
+networks:
+  - name: k8sbr0
+    type: bridge
+    description: 'Kubernetes LXD bridge'
+    config:
+      ipv4.address: 192.168.100.1/24
+      ipv4.nat: 'true'
+      ipv4.dhcp: 'true'
+      ipv4.dhcp.ranges: 192.168.100.100-192.168.100.200
+      ipv6.address: none
+storage_pools:
+  - name: default
+    driver: zfs
+    config:
+      source: datapool
+  - name: master-pool
+    driver: zfs
+    config:
+      source: masterpool
+  - name: worker1-pool
+    driver: zfs
+    config:
+      source: worker1pool
+profiles:
+  - name: default
+    devices:
+      root:
+        path: /
+        pool: default
+        type: disk
+      eth0:
+        name: eth0
+        network: k8sbr0
+        type: nic
+  - name: k8s-base
+    description: 'Kubernetes node - Cilium/eBPF ready'
+    config:
+      security.privileged: 'true'
+      security.nesting: 'true'
+      boot.autostart: 'true'
+      limits.memory.swap: 'false'
+      limits.memory: '8GiB' # Adjust per node after launch if asymmetric — see 01-create-containers.sh
+      limits.cpu: '4'
+      linux.kernel_modules: >-
+        overlay,
+        br_netfilter,
+        ip_tables,
+        ip6_tables,
+        nf_nat,
+        xt_conntrack,
+        ip_vs,
+        ip_vs_rr,
+        ip_vs_wrr,
+        ip_vs_sh
+      raw.lxc: |
+        lxc.apparmor.profile=unconfined
+        lxc.cap.drop=
+    devices:
+      root:
+        type: disk
+        pool: default
+        path: /
+        size: 40GiB
+      eth0:
+        type: nic
+        network: k8sbr0
+        name: eth0
+      # Kernel message device — some monitoring/logging tooling reads this directly
+      kmsg:
+        type: unix-char
+        source: /dev/kmsg
+        path: /dev/kmsg

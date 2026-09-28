@@ -1,0 +1,18 @@
+# 2172-docker-compose-mysql.yml
+# docker compose up -d
+# docker compose -f 2172-docker-compose-mysql.yml up -d
+#
+# MySQL:
+
+services:
+  mysql:
+    image: mysql:26.7
+    container_name: mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: mysqlpwd
+      MYSQL_DATABASE: pulumi
+    ports:
+      - '3306:3306'
+    volumes:
+      - /srv/mysql-data:/var/lib/mysql

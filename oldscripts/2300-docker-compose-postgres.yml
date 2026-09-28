@@ -1,0 +1,49 @@
+# 2300-docker-compose-postgres.yml
+#
+# docker compose -f 2300-docker-compose-postgres.yml down
+
+# docker compose -f 2170-docker-compose-minio.yml down
+
+# docker network inspect scripts_default
+# docker stop minio
+
+# docker compose -f 2300-docker-compose-postgres.yml down
+
+# sudo rm -rf /srv/postgres-data/*
+# sudo rm -rf /srv/postgres-data/18
+# sudo ls -la /srv/postgres-data/
+
+# docker compose -f 2300-docker-compose-postgres.yml up -d
+# docker compose -f 2300-docker-compose-postgres.yml up -d postgres adminer
+#
+# docker compose -f 2170-docker-compose-minio.yml up -d minio
+# --remove-orphans
+# PostgreSQL:
+name: postgres-stack
+services:
+  postgres:
+    image: postgres:18
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: postgres
+    volumes:
+      - /srv/postgres-data:/var/lib/postgresql
+    ports:
+      - '5432:5432'
+
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    ports:
+      - '8081:8080'
+    depends_on:
+      - postgres
+networks:
+  default:
+    name: postgres-net
