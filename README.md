@@ -1,6 +1,6 @@
-# Keycloak & Kong on Kubernetes (Ubuntu 26 / LXD + Cilium CNI)
+# Keycloak & Kong on Kubernetes via Pulumi YAML (Ubuntu 26 / LXD + Cilium CNI)
 
-End-to-end deployment, configuration, and testing suite for **Keycloak 26 (Quarkus)** integrated with **Kong Gateway** and **Cilium eBPF** on Kubernetes running in **Ubuntu 26 / LXD containers**.
+Declarative Infrastructure-as-Code with **Pulumi YAML** (`pulumi up`) to deploy and test **Keycloak 26 (Quarkus)** backed by **PostgreSQL**, routed through **Kong Gateway** on a **Cilium eBPF** Kubernetes cluster.
 
 ---
 
@@ -48,14 +48,17 @@ External Client (Browser / Postman / cURL)
 
 ```
 .
-├── k8s/
-│   ├── 00-namespace.yaml            # Dedicated keycloak namespace
-│   ├── 01-postgres.yaml             # PostgreSQL database deployment & service
-│   ├── 02-keycloak.yaml             # Keycloak 26 (Quarkus) deployment & service
-│   ├── 03-kong-ingress.yaml         # Kong Ingress exposing Keycloak via nip.io
-│   └── 04-kong-jwt-echo-plugin.yaml # Kong JWT Plugin protecting kong-lab/echo
+├── Pulumi.yaml                      # Pulumi YAML program defining all K8s resources
+├── Pulumi.dev.yaml                  # Stack configuration (VIPs, passwords, etc.)
+├── k8s/                             # (Reference raw manifests if needed)
+│   ├── 00-namespace.yaml
+│   ├── 01-postgres.yaml
+│   ├── 02-keycloak.yaml
+│   ├── 03-kong-ingress.yaml
+│   └── 04-kong-jwt-echo-plugin.yaml
 ├── scripts/
-│   ├── deploy.sh                    # Deploy all manifests to Kubernetes
+│   ├── deploy.sh                    # Wrapper calling 'pulumi up --yes'
+│   ├── destroy.sh                   # Wrapper calling 'pulumi destroy --yes'
 │   ├── test-m2m.sh                  # Test Machine-to-Machine (Client Credentials)
 │   ├── test-user-token.sh           # Test End-User login & JWT generation
 │   └── test-kong-protected-echo.sh  # Test Kong JWT authorization against echo pod
@@ -65,39 +68,49 @@ External Client (Browser / Postman / cURL)
 
 ---
 
-## 🚀 Deployment from `k8master` (or Host `k8s`)
+## 🚀 Pulumi Workflow (on `k8s` host or `k8master`)
 
-### 1. Make Scripts Executable
+### 1. Preview Changes
 ```bash
-chmod +x scripts/*.sh
+pulumi preview
 ```
 
-### 2. Run Deployment
+### 2. Deploy the Entire Stack
 ```bash
-./scripts/deploy.sh
+pulumi up
 ```
-Or apply manifests directly:
-```bash
-kubectl apply -f k8s/
+*(Or use `./scripts/deploy.sh`)*
+
+Pulumi will create the `keycloak` namespace, deploy PostgreSQL, wait for it to be ready, launch Keycloak 26 (Quarkus), and create the Kong Ingress rule.
+
+At the end of the deployment, Pulumi prints the outputs:
+```text
+Outputs:
+    adminUsername       : "admin"
+    keycloakAdminUrl    : "http://keycloak.192.168.100.240.nip.io/admin"
+    keycloakWellKnownUrl: "http://keycloak.192.168.100.240.nip.io/realms/lab-realm/.well-known/openid-configuration"
 ```
 
-### 3. Access Keycloak Admin Console
-Open your browser:
-- **URL:** [http://keycloak.192.168.100.240.nip.io/admin](http://keycloak.192.168.100.240.nip.io/admin)
-- **Username:** `admin`
-- **Password:** `AdminMasterPassword123!`
+### 3. Teardown / Reset
+```bash
+pulumi destroy
+```
+*(Or use `./scripts/destroy.sh`)*
 
 ---
 
 ## 🧪 Testing Roadmap
 
-All testing scripts run directly on Linux with `bash`, `curl`, and optional `jq`:
+All testing scripts run directly on Linux with `bash`, `curl`, and `jq`:
 
 ### 1. Test 1 - Create Realm & User in Admin Console
-- Create realm: `lab-realm`
-- Create client: `demo-app` (Public client)
-- Create confidential client: `backend-service` (Service account enabled)
-- Create user: `alice` / `Password123!`
+1. Open [http://keycloak.192.168.100.240.nip.io/admin](http://keycloak.192.168.100.240.nip.io/admin)
+   - **User:** `admin`
+   - **Password:** `AdminMasterPassword123!`
+2. Create Realm: `lab-realm`
+3. Create Client: `demo-app` (Public client)
+4. Create Confidential Client: `backend-service` (Service account enabled)
+5. Create User: `alice` / `Password123!`
 
 ### 2. Test 2 - Machine-to-Machine Auth (M2M)
 ```bash
@@ -108,14 +121,9 @@ All testing scripts run directly on Linux with `bash`, `curl`, and optional `jq`
 ```bash
 ./scripts/test-user-token.sh alice Password123!
 ```
-*(Decodes JWT payload and saves token to `/tmp/keycloak/token.txt`)*
 
 ### 4. Test 4 - Kong Gateway API Protection
 ```bash
-# Apply the Kong JWT plugin first:
-kubectl apply -f k8s/04-kong-jwt-echo-plugin.yaml
-
-# Run verification:
 ./scripts/test-kong-protected-echo.sh
 ```
 - Request **without** Bearer token &rarr; `401 Unauthorized`

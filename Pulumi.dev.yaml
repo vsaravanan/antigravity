@@ -1,0 +1,5 @@
+config:
+  keycloak-k8s:kongVip: "192.168.100.240"
+  keycloak-k8s:keycloakAdminUser: "admin"
+  keycloak-k8s:keycloakAdminPassword: "AdminMasterPassword123!"
+  keycloak-k8s:postgresPassword: "KeycloakDbPassword123!"
