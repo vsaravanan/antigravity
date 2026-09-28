@@ -1,0 +1,31 @@
+apiVersion: configuration.konghq.com/v1
+kind: KongPlugin
+metadata:
+  name: keycloak-jwt-auth
+  namespace: kong-lab
+plugin: jwt
+config:
+  claims_to_verify:
+  - exp
+  key_claim_name: iss
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: echo-jwt-ingress
+  namespace: kong-lab
+  annotations:
+    konghq.com/plugins: keycloak-jwt-auth
+    konghq.com/strip-path: "false"
+spec:
+  ingressClassName: kong
+  rules:
+  - http:
+      paths:
+      - path: /echo-protected
+        pathType: Prefix
+        backend:
+          service:
+            name: echo
+            port:
+              number: 80
