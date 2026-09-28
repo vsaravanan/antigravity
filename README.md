@@ -1,6 +1,6 @@
-# Keycloak & Kong on Kubernetes (Cilium CNI)
+# Keycloak & Kong on Kubernetes (Ubuntu 26 / LXD + Cilium CNI)
 
-End-to-end deployment, configuration, and testing suite for **Keycloak 26 (Quarkus)** integrated with **Kong Gateway** and **Cilium eBPF** on Kubernetes.
+End-to-end deployment, configuration, and testing suite for **Keycloak 26 (Quarkus)** integrated with **Kong Gateway** and **Cilium eBPF** on Kubernetes running in **Ubuntu 26 / LXD containers**.
 
 ---
 
@@ -34,9 +34,10 @@ External Client (Browser / Postman / cURL)
    └───────────────────┘
 ```
 
-### Cluster Environment
-- **Control Plane (`k8master`):** `192.168.100.10`
-- **Worker Node (`k8worker1`):** `192.168.100.11`
+### Cluster Environment (Ubuntu 26 / LXD)
+- **Host:** `k8s`
+- **Control Plane (`k8master`):** `192.168.100.10` (access via `ssh k8master`)
+- **Worker Node (`k8worker1`):** `192.168.100.11` (access via `ssh k8worker1`)
 - **CNI:** Cilium (eBPF)
 - **Ingress Gateway:** Kong Gateway (`192.168.100.240:80 / 443`)
 - **Keycloak Hostname:** `http://keycloak.192.168.100.240.nip.io`
@@ -54,29 +55,33 @@ External Client (Browser / Postman / cURL)
 │   ├── 03-kong-ingress.yaml         # Kong Ingress exposing Keycloak via nip.io
 │   └── 04-kong-jwt-echo-plugin.yaml # Kong JWT Plugin protecting kong-lab/echo
 ├── scripts/
-│   ├── deploy.ps1                   # Deploy all manifests to Kubernetes
-│   ├── test-m2m.ps1                 # Test Machine-to-Machine (Client Credentials)
-│   ├── test-user-token.ps1          # Test End-User login & JWT generation
-│   └── test-kong-protected-echo.ps1 # Test Kong JWT authorization against echo pod
+│   ├── deploy.sh                    # Deploy all manifests to Kubernetes
+│   ├── test-m2m.sh                  # Test Machine-to-Machine (Client Credentials)
+│   ├── test-user-token.sh           # Test End-User login & JWT generation
+│   └── test-kong-protected-echo.sh  # Test Kong JWT authorization against echo pod
 └── tests/
     └── keycloak-suite.http          # HTTP REST tests (VS Code / REST Client compatible)
 ```
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Deployment from `k8master` (or Host `k8s`)
 
-### 1. Deploy Keycloak & Database
-Run PowerShell deploy script:
-```powershell
-.\scripts\deploy.ps1
+### 1. Make Scripts Executable
+```bash
+chmod +x scripts/*.sh
 ```
-Or apply manifests manually:
+
+### 2. Run Deployment
+```bash
+./scripts/deploy.sh
+```
+Or apply manifests directly:
 ```bash
 kubectl apply -f k8s/
 ```
 
-### 2. Access the Keycloak Admin Console
+### 3. Access Keycloak Admin Console
 Open your browser:
 - **URL:** [http://keycloak.192.168.100.240.nip.io/admin](http://keycloak.192.168.100.240.nip.io/admin)
 - **Username:** `admin`
@@ -86,8 +91,32 @@ Open your browser:
 
 ## 🧪 Testing Roadmap
 
-1. **Test 1 - Admin Console & Realm Creation:** Create `lab-realm`, users (`alice`), and roles (`api-user`).
-2. **Test 2 - Machine-to-Machine Auth (M2M):** Run `.\scripts\test-m2m.ps1` to test the OAuth2 Client Credentials flow.
-3. **Test 3 - User Authentication:** Run `.\scripts\test-user-token.ps1` to obtain User Access & Refresh tokens.
-4. **Test 4 - Kong JWT Validation:** Run `.\scripts\test-kong-protected-echo.ps1` to verify Kong blocks unauthenticated requests and permits valid Keycloak JWTs.
-5. **Test 5 - Multi-Factor Authentication (MFA):** Enable OTP in Keycloak and verify QR code setup via the Account console.
+All testing scripts run directly on Linux with `bash`, `curl`, and optional `jq`:
+
+### 1. Test 1 - Create Realm & User in Admin Console
+- Create realm: `lab-realm`
+- Create client: `demo-app` (Public client)
+- Create confidential client: `backend-service` (Service account enabled)
+- Create user: `alice` / `Password123!`
+
+### 2. Test 2 - Machine-to-Machine Auth (M2M)
+```bash
+./scripts/test-m2m.sh <YOUR_BACKEND_SERVICE_CLIENT_SECRET>
+```
+
+### 3. Test 3 - User Authentication & Token Inspection
+```bash
+./scripts/test-user-token.sh alice Password123!
+```
+*(Decodes JWT payload and saves token to `/tmp/keycloak/token.txt`)*
+
+### 4. Test 4 - Kong Gateway API Protection
+```bash
+# Apply the Kong JWT plugin first:
+kubectl apply -f k8s/04-kong-jwt-echo-plugin.yaml
+
+# Run verification:
+./scripts/test-kong-protected-echo.sh
+```
+- Request **without** Bearer token &rarr; `401 Unauthorized`
+- Request **with** Keycloak Bearer token &rarr; `200 OK`
