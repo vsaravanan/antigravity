@@ -68,14 +68,16 @@ spec:
           effect: NoSchedule
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:26.0
+          image: quay.io/keycloak/keycloak:26.7.1
           args:
             - 'start'
             - '--http-enabled=true'
             - '--hostname-strict=false'
             - '--proxy-headers=xforwarded'
           envFrom: [{ secretRef: { name: keycloak-admin } }]
-          env: [{ name: KC_DB, value: postgres }]
+          env:
+            - {name: KC_DB, value: postgres}
+            - {name: KC_HTTP_RELATIVE_PATH, value: /auth}
           ports: [{ containerPort: 8080, name: http }]
           volumeMounts:
             - name: data
@@ -102,7 +104,7 @@ kind: Ingress
 metadata:
   name: keycloak-ingress
   namespace: keycloak
-  annotations: { konghq.com/strip-path: 'true' }
+  # annotations: { konghq.com/strip-path: 'true' }
 spec:
   ingressClassName: kong
   rules:
