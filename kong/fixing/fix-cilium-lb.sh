@@ -15,7 +15,7 @@
 #   LB_IP  defaults to 192.168.100.240
 #   PATH   defaults to /auth/  (any path Kong routes and returns 2xx/3xx for)
 # ./fix-cilium-lb.sh                              # checks 192.168.100.240/auth/ by default
-./fix-cilium-lb.sh 192.168.100.240 /echo         # or check a different path/route
+# ./fix-cilium-lb.sh 192.168.100.240 /echo         # or check a different path/route
 
 set -euo pipefail
 
