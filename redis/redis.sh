@@ -26,7 +26,7 @@ redis:6379> GET name
 
 INSIDE ANY POD :
 
-root@k8master:/data/java/Hello/redis# kubectl run dns-test   --image=busybox:1.36   --restart=Never   -it --rm -- sh
+root@k8master:/data/antigravity/hello-api/redis# kubectl run dns-test   --image=busybox:1.36   --restart=Never   -it --rm -- sh
 If you dont see a command prompt, try pressing enter.
 / #
 / #

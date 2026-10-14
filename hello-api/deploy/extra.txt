@@ -1,6 +1,6 @@
-    lxc file push -r /data/java/Hello k8master/data/java
+    lxc file push -r /data/antigravity/hello-api k8master/data/java
 
-    lxc exec k8master -- bash /data/java/Hello/deploy/k8master-build.sh
+    lxc exec k8master -- bash /data/antigravity/hello-api/deploy/k8master-build.sh
 
 root@k8master:~# curl -s 10.101.43.128/hello
 Hello, World!
@@ -99,16 +99,16 @@ kdd registry ; kds  registry-svc ; kdd hello-api  ; kds hello-api-svc
 kga | grep -E 'hello|registry'
 
 cd /data/fe/hello-ui/deploy;  git reset --hard; git pull ; chmod +x *.sh ;
-cd /data/java/Hello/deploy;  git reset --hard; git pull ; chmod +x *.sh ;
+cd /data/antigravity/hello-api/deploy;  git reset --hard; git pull ; chmod +x *.sh ;
 
-kubectl apply -f /data/java/Hello/deploy/registry.yaml
-kubectl apply -f /data/java/Hello/deploy/hello-api.yaml
+kubectl apply -f /data/antigravity/hello-api/deploy/registry.yaml
+kubectl apply -f /data/antigravity/hello-api/deploy/hello-api.yaml
 kubectl apply -f /data/fe/hello-ui/deploy/hello-ui.yaml
 kubectl scale deployment registry hello-api hello-ui --replicas=0
 kubectl scale deployment registry --replicas=1
 rm /data/logs/hello-api/*
 
-root@k8master:/data/java/Hello/deploy# kga | grep -E 'hello|registry'
+root@k8master:/data/antigravity/hello-api/deploy# kga | grep -E 'hello|registry'
 default        pod/hello-api-d74cb56d5-gp7cs          0/1     ErrImagePull   0             9s
 default        pod/registry-548ff5f79d-2mspl          1/1     Running        0             10s
 default       service/hello-api-svc   NodePort    10.108.245.148   <none>        80:30080/TCP             9s
@@ -134,16 +134,16 @@ Connecting to hello-api-svc (10.102.195.85:80)
 # cat hello
 {"details":"Testing hello"}/
 
-root@k8master:/data/java/Hello/deploy# kgag hello
+root@k8master:/data/antigravity/hello-api/deploy# kgag hello
 default        pod/hello-api-d74cb56d5-r78j8          1/1     Running   0              9m31s
 default       service/hello-api-svc   NodePort    10.97.45.219     <none>        80:30080/TCP             15m
 default       service/hello-ui-svc    NodePort    10.105.151.166   <none>        3000:30030/TCP           15m
 
-root@k8master:/data/java/Hello/deploy# curl -s k8master:30080/api/hello
-{"details":"Testing hello"}root@k8master:/data/java/Hello/deploy#
+root@k8master:/data/antigravity/hello-api/deploy# curl -s k8master:30080/api/hello
+{"details":"Testing hello"}root@k8master:/data/antigravity/hello-api/deploy#
 
-root@k8master:/data/java/Hello/deploy# curl -s 10.97.45.219/api/hello
-{"details":"Testing hello"}root@k8master:/data/java/Hello/deploy#
+root@k8master:/data/antigravity/hello-api/deploy# curl -s 10.97.45.219/api/hello
+{"details":"Testing hello"}root@k8master:/data/antigravity/hello-api/deploy#
 
 REBUILD
 ============  

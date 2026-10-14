@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.saravanjs</groupId>
-	<artifactId>hello</artifactId>
+	<artifactId>hello-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-    <name>Hello</name>
+    <name>hello-api</name>
 	<description/>
 	<url/>
 	<licenses>

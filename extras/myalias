@@ -55,10 +55,10 @@ alias klf='kubectl logs -f'  # follow logs
 # buildah rmi --all --force
 
     # # file push from host to k8master
-    # lxc file push -r /data/java/Hello k8master/data/java
+    # lxc file push -r /data/antigravity/hello-api k8master/data/java
 
     # # run command in bash at k8master
-    # lxc exec k8master -- bash /data/java/Hello/deploy/build.sh
+    # lxc exec k8master -- bash /data/antigravity/hello-api/deploy/build.sh
 
     # # proxy from host to windows
     # lxc config device add k8master javaapi proxy  listen=tcp:0.0.0.0:30080  connect=tcp:192.168.100.10:30080
