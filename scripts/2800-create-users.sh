@@ -1,6 +1,11 @@
 #!/bin/bash
 # 2800-create-users.sh
 
+#   k exec -i keycloak-0 -n keycloak -- sh -c 'cat > /opt/keycloak/bin/2800-create-users.sh' < ./2800-create-users.sh
+#   k exec -it -n keycloak pod/keycloak-0 -- bash
+#  cd /opt/keycloak/bin            
+#  bash ./2800-create-users.sh    
+
 K=/opt/keycloak/bin/kcadm.sh
 R=matrix-test
 
