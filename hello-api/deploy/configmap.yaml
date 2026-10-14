@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  database.url: mysql.example.com
+  database.user: admin
+  app.mode: production

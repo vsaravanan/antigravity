@@ -1,0 +1,29 @@
+# filename : values-monitoring.yaml
+grafana:
+  service:
+    type: NodePort
+    nodePort: 30094
+  adminUser: admin
+  adminPassword: admin
+  defaultDashboardsEnabled: true
+
+prometheus:
+  service:
+    type: NodePort
+    nodePort: 30090
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+
+alertmanager:
+  service:
+    type: NodePort
+    nodePort: 30093
+
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true

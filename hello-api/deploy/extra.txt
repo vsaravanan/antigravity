@@ -1,0 +1,288 @@
+    lxc file push -r /data/java/Hello k8master/data/java
+
+    lxc exec k8master -- bash /data/java/Hello/deploy/k8master-build.sh
+
+root@k8master:~# curl -s 10.101.43.128/hello
+Hello, World!
+
+
+
+
+
+VirtualBox Port Forwarding 
+
+
+Name    Protocol    Host IP    Host Port    Guest IP    Guest Port
+k8s-api    TCP    127.0.0.1    8080    10.0.2.15    8080
+
+viswar@k8s:/$ lxc config device add k8master javaapi proxy \
+> listen=tcp:0.0.0.0:30080 \
+> connect=tcp:192.168.100.10:30080
+
+
+
+
+
+viswar@k8s:/$ lxc config device add k8master hello-ui-pfwd proxy \
+> listen=tcp:0.0.0.0:30030 \
+> connect=tcp:192.168.100.10:30030
+
+
+kubectl delete deployment hello-api --ignore-not-found
+kubectl delete svc hello-spi-svc --ignore-not-found
+
+
+# Scale down to 0
+kubectl scale deployment registry hello-api hello-ui --replicas=0
+
+space issue due to buildah images
+
+df -h /
+
+buildah images
+buildah rmi --all --force
+
+
+df -h /
+
+when wrongly scale is 0
+
+# kgd registry
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+registry   0/0     0            0           10h
+
+# kgd registry -o wide
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES       SELECTOR
+registry   0/0     0            0           10h   registry     registry:2   app=registry
+
+# kgd registry -o jsonpath='{.spec.replicas}'
+0
+
+# kubectl get deployment registry -o jsonpath='Desired: {.spec.replicas}, Ready: {.status.readyReplicas}'
+Desired: 0, Ready: #
+
+# ksd registry --replicas=1
+deployment.apps/registry scaled
+
+# kgd registry
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+registry   1/1     1            1           10h
+
+
+
+
+# Delete all resources with label app=hello-api
+# This deletes: pods, services, deployments, replicasets, statefulsets, daemonsets, jobs, cronjobs
+
+root@k8master:/data/logs/hello-api# kubectl delete all -l app=hello-api
+pod "hello-api-d74cb56d5-jfmgc" deleted
+pod "hello-api-ff795dfcb-2cnns" deleted
+deployment.apps "hello-api" deleted
+replicaset.apps "hello-api-64c46d8954" deleted
+
+
+kubectl delete all -l app=hello-api
+kubectl delete all -l app=hello-ui
+kubectl delete all -l app=registry
+kds hello-api-svc registry-svc
+kubectl delete deployment registry
+kubectl delete rs registry-548ff5f79d
+
+
+buildah images
+buildah rmi --force --all
+
+buildah images
+kga | grep -E 'hello|registry'
+
+kdd registry ; kds  registry-svc ; kdd hello-api  ; kds hello-api-svc
+kga | grep -E 'hello|registry'
+
+cd /data/fe/hello-ui/deploy;  git reset --hard; git pull ; chmod +x *.sh ;
+cd /data/java/Hello/deploy;  git reset --hard; git pull ; chmod +x *.sh ;
+
+kubectl apply -f /data/java/Hello/deploy/registry.yaml
+kubectl apply -f /data/java/Hello/deploy/hello-api.yaml
+kubectl apply -f /data/fe/hello-ui/deploy/hello-ui.yaml
+kubectl scale deployment registry hello-api hello-ui --replicas=0
+kubectl scale deployment registry --replicas=1
+rm /data/logs/hello-api/*
+
+root@k8master:/data/java/Hello/deploy# kga | grep -E 'hello|registry'
+default        pod/hello-api-d74cb56d5-gp7cs          0/1     ErrImagePull   0             9s
+default        pod/registry-548ff5f79d-2mspl          1/1     Running        0             10s
+default       service/hello-api-svc   NodePort    10.108.245.148   <none>        80:30080/TCP             9s
+default       service/registry-svc    NodePort    10.103.216.0     <none>        5000:31105/TCP           10s
+default       deployment.apps/hello-api   0/1     1            0           9s
+default       deployment.apps/registry    1/1     1            1           10s
+default       replicaset.apps/hello-api-d74cb56d5   1         1         0       9s
+default       replicaset.apps/registry-548ff5f79d   1         1         1       
+
+
+kga | grep -E 'registry|hello' ; buildah images
+
+cp ../extras/myalias /etc/myalias
+source /etc/myalias
+
+
+SANITY CHECK
+============
+root@k8master:~# kubectl run dns-test   --image=busybox:1.36   --restart=Never   -it --rm -- sh
+
+/ # wget http://hello-api-svc/api/hello
+Connecting to hello-api-svc (10.102.195.85:80)
+# cat hello
+{"details":"Testing hello"}/
+
+root@k8master:/data/java/Hello/deploy# kgag hello
+default        pod/hello-api-d74cb56d5-r78j8          1/1     Running   0              9m31s
+default       service/hello-api-svc   NodePort    10.97.45.219     <none>        80:30080/TCP             15m
+default       service/hello-ui-svc    NodePort    10.105.151.166   <none>        3000:30030/TCP           15m
+
+root@k8master:/data/java/Hello/deploy# curl -s k8master:30080/api/hello
+{"details":"Testing hello"}root@k8master:/data/java/Hello/deploy#
+
+root@k8master:/data/java/Hello/deploy# curl -s 10.97.45.219/api/hello
+{"details":"Testing hello"}root@k8master:/data/java/Hello/deploy#
+
+REBUILD
+============  
+
+git reset --hard; git pull ; chmod +x *.sh ;
+./clean.sh
+kga ; buildah images
+./apply.sh
+kga ; buildah images
+./restart.sh registry not necessary
+./build.sh
+./restart.sh hello-api not necessary
+
+
+=================
+important steps
+
+
+cd $project_path
+mvn clean package
+
+mylog "🚀 buildah building latest image ..."
+# buildah bud -t hello-api:latest -f deploy/Dockerfile .
+buildah bud -t "$myimage" -f deploy/Dockerfile .
+
+#  buildah push --tls-verify=false hello-api:latest docker://k8master:5000/hello-api:latest
+buildah push --tls-verify=false "${myimage}" "docker://${registry_url}/${myimage}"
+
+kubectl scale deployment $module --replicas=0
+
+log_info "Deleting pod for $module"
+kubectl delete pod -l app=$module || true
+
+mylog "Roll out latest API image"
+kubectl set image deployment/$module $module="$registry_url/${myimage}"
+
+kubectl scale deployment $module --replicas=1
+
+mylog "Wait for rollout to finish"
+kubectl rollout status deployment/$module
+
+
+# ❌ NOT NEEDED - This is done automatically by set image
+kubectl scale deployment $module --replicas=0
+kubectl delete pod -l app=$module || true
+kubectl scale deployment $module --replicas=1
+
+# ✅ ALL YOU NEED - This triggers new rollout
+kubectl set image deployment/$module $module="$registry_url/${myimage}"
+kubectl rollout status deployment/$module
+
+
+kubectl set image deployment/hello-api hello-api=k8master:5000/hello-api:latest
+kubectl rollout status deployment/hello-api
+
+
+rollback to previous version
+
+buildah tag 3087ce063538 hello-ui:latest
+buildah push --tls-verify=false hello-ui:latest docker://k8master:5000/hello-ui:latest
+kubectl set image deployment/hello-ui hello-ui=k8master:5000/hello-ui:latest not used
+kubectl rollout restart deployment/hello-ui
+kubectl rollout status deployment/hello-ui not used
+
+to rollback to particular version :
+=================================
+
+root@k8master:~# kubectl rollout history deployment/hello-ui
+deployment.apps/hello-ui
+REVISION  CHANGE-CAUSE
+1         <none>
+2         <none>
+3         <none>
+
+root@k8master:~# kubectl rollout undo deployment/hello-ui --to-revision=2
+deployment.apps/hello-ui rolled back
+
+another way :
+===========
+
+kdd hello-ui
+kubectl create deployment hello-ui --image=k8master:5000/hello-ui:4c960bf-git_tag
+kubectl create deployment hello-api --image=k8master:5000/hello-api:72fbff8-replicas-0
+
+  buildah rmi --prune
+  buildah rmi hello-api:c5e68c7-restore
+  buildah rmi 765859361fb5
+  buildah rmi --all --force
+
+
+root@k8master:/data/fe/hello-ui/deploy# kubectl get events --sort-by=.lastTimestamp
+
+watch -n 2 'kubectl get events --sort-by=.lastTimestamp'
+
+kubectl events --watch
+
+ Scaled up replica set registry-548ff5f79d from 0 to 1
+ Created pod: registry-548ff5f79d-xdzvm
+ Container image "registry:2" already present on machine
+ Created container: registry
+ Started container registry
+ Scaled up replica set hello-api-7858bcbf4c from 0 to 1
+ Created pod: hello-api-7858bcbf4c-kkvz5
+ Successfully assigned default/hello-api-7858bcbf4c-kkvz5 to k8worker1
+ Pulling image "k8master:5000/hello-api:72fbff8-replicas-0"
+ Successfully pulled image "k8master:5000/hello-api:72fbff8-replicas-0"
+
+ Created container: hello-api
+ Started container hello-api
+ Scaled up replica set hello-ui-79cc996d47 from 0 to 1
+ Created pod: hello-ui-79cc996d47-c5dxk
+ Successfully assigned default/hello-ui-79cc996d47-c5dxk to k8worker1
+ Pulling image "k8master:5000/hello-ui:1164b5f-replicas-0"
+ Successfully pulled image "k8master:5000/hello-ui:1164b5f-replicas-0"
+
+ Created container: hello-ui
+ Started container hello-ui
+
+
+ =====================================  AFTER SERVER RESTART
+
+ OPTION A) apply is preferred method
+ kubectl apply -f $module.yaml
+ kubectl scale deployment $module --replicas=1
+ kubectl rollout restart deployment/$module
+
+ OPTION B)
+ kubectl delete deployment $module
+ kubectl create deployment $module --image=k8master:5000/$module:72fbff8-replicas-0
+ kubectl create deployment $module  --image=k8master:5000/$module:latest
+
+
+=========================== ALWAYS CHECK FOR FAILURES
+
+root@k8master:/data/fe/hello-ui/deploy# curl http://localhost:5000/v2/_catalog
+{"repositories":["hello-api"]}
+
+root@k8master:/data/fe/hello-ui/deploy# curl http://localhost:5000/v2/hello-api/tags/list
+{"name":"hello-api","tags":["e9d11fc-removedech"]}
+
+
+buildah push --tls-verify=false     hello-api:latest "docker://k8master:5000/hello-api:latest"

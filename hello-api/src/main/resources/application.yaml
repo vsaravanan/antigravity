@@ -1,0 +1,47 @@
+server.port: ${SERVER_PORT:7000}
+spring:
+  application:
+    name: hello
+
+
+
+  data:
+    redis:management.endpoints.web.exposure.include: "*"
+# management.endpoints.web.exposure.include: health,info,prometheus
+management.endpoint.health.show-details: always
+management.metrics.tags.application: hello-api, hello-ui, hello-api-svc, hello-ui-svc
+management.prometheus.metrics.export.enabled: true
+
+spring.data.redis.host:  redis.redis.svc.cluster.local # if it is in the redis namespace
+#spring.data.redis.host: localhost
+##spring.data.redis.host: redis # if it is in the same namespace
+spring.data.redis.port: 6379
+app.redis.enabled: true
+
+# SpringDoc / Swagger UI
+#springdoc:
+#  api-docs:
+#    path: /v3/api-docs
+#  swagger-ui:
+#    path: /swagger-ui.html
+#    operations-sorter: method
+#    tags-sorter: alpha
+
+dirLog: /data/logs/hello-api
+
+logging:
+  file.clean-history-on-start: true
+  level:
+    root: INFO
+    com.saravanjs.hello: DEBUG
+  pattern:
+    #    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    console: "%M - %msg%n"
+    file: "%msg%n"
+  path: ${dirLog}
+  file.name: ${dirLog}/hello-api.log
+
+  file.max-size: 100MB
+  file.max-history: 15
+
+  pattern.rolling-file-name: ${dirLog}/%d{yyyyMMdd}/hello-api.%d{yyyyMMdd}.%i.log.gz
