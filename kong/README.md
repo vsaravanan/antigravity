@@ -314,3 +314,10 @@ pulumi stack rm dev
 7. Keycloak: replace API keys with OIDC login.
 8. Vault: store shared secrets.
 9. Kafka, OpenSearch, GitLab: build the larger platform later.
+
+
+```powershell
+
+   $env:CLAUDE_CONFIG_DIR = "$HOME\.claude-omniroute"; claude
+
+```
