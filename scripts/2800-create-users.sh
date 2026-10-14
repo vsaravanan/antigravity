@@ -5,7 +5,7 @@ K=/opt/keycloak/bin/kcadm.sh
 R=matrix-test
 
 # log in as the master admin (change the credentials to yours)
-$K config credentials --server http://localhost:8080 --realm master --user admin --password admin123
+$K config credentials --server http://localhost:8080/auth --realm master --user admin --password admin123
 
 # realm
 $K create realms -s realm=$R -s enabled=true
