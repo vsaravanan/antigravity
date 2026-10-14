@@ -35,10 +35,10 @@ mylog "Record current git commit as the deployment tag"
 echo "$mytag" | tee "$project_path/.current_tag"
 
 mylog "docker push image to registry "
-#  docker push --tls-verify=false hello-api:latest docker://k8master:5000/hello-api:latest
+#  docker push    hello-api:latest docker://k8master:5000/hello-api:latest
 #  docker prefix is required
 
-docker push --tls-verify=false \
+docker push    \
     ${latestimage} "docker://${registry_url}/${latestimage}"
 
 mylog "tag   to ${myimage}"

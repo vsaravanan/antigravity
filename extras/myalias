@@ -73,7 +73,7 @@ alias klf='kubectl logs -f'  # follow logs
 # buildah bud -t "$myimage" -f deploy/Dockerfile .
 
 # "Push image to registry"
-# buildah push --tls-verify=false  "${myimage}" "docker://$registry_url/${myimage}"
+# buildah push     "${myimage}" "docker://$registry_url/${myimage}"
 
 # kubectl apply -f $deploy_path/$module.yaml
 
