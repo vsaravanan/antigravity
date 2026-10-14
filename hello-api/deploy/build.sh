@@ -25,24 +25,24 @@ mylog "Build jar with Maven"
 cd $project_path
 mvn clean package
 
-mylog "Build image with Docker"
+mylog "Build image with Podman"
 cd $project_path
-mylog "🚀 docker building latest image ..."
-# docker build -t hello-api:latest -f deploy/Dockerfile .
-docker build -t "${latestimage}" -f deploy/Dockerfile .
+mylog "🚀 podman building latest image ..."
+# podman build -t hello-api:latest -f deploy/Dockerfile .
+podman build -t "${latestimage}" -f deploy/Dockerfile .
 
 mylog "Record current git commit as the deployment tag"
 echo "$mytag" | tee "$project_path/.current_tag"
 
-mylog "docker push image to registry "
-#  docker push    hello-api:latest docker://k8master:5000/hello-api:latest
+mylog "podman push image to registry "
+#  podman push    hello-api:latest docker://k8master:5000/hello-api:latest
 #  docker prefix is required
 
-docker push    \
+podman push    \
     ${latestimage} "docker://${registry_url}/${latestimage}"
 
 mylog "tag   to ${myimage}"
-docker tag  ${latestimage} "${myimage}"
+podman tag  ${latestimage} "${myimage}"
 
 # required only on first time
 kubectl scale deployment $module --replicas=0 || true

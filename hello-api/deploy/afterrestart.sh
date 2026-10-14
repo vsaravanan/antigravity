@@ -14,6 +14,6 @@ kubectl delete deployment $module || true
 kubectl delete rs   -l app=$module || true
 kubectl delete pods -l app=$module || true
 
-buildah push        $module:latest "docker://k8master:5000/$module:latest"
+podman push        $module:latest "docker://k8master:5000/$module:latest"
 
 kubectl apply -f "$deploy_path/$module.yaml"
