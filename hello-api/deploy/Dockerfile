@@ -5,10 +5,10 @@ FROM docker.io/library/eclipse-temurin:26-jre-alpine
 WORKDIR /app
 
 # Copy the JAR file
-COPY target/Hello.jar /app/Hello.jar
+COPY target/hello-api.jar /app/hello-api.jar
 
 # Expose port 8000
 EXPOSE 8000
 
 # Run the application
-ENTRYPOINT ["java", "-jar", "/app/Hello.jar"]
+ENTRYPOINT ["java", "-jar", "/app/hello-api.jar"]
