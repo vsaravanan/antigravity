@@ -25,24 +25,24 @@ mylog "Build jar with Maven"
 cd $project_path
 mvn clean package
 
-mylog "Build image with Buildah"
+mylog "Build image with Docker"
 cd $project_path
-mylog "🚀 buildah building latest image ..."
-# buildah bud -t hello-api:latest -f deploy/Dockerfile .
-buildah bud -t "${latestimage}" -f deploy/Dockerfile .
+mylog "🚀 docker building latest image ..."
+# docker build -t hello-api:latest -f deploy/Dockerfile .
+docker build -t "${latestimage}" -f deploy/Dockerfile .
 
 mylog "Record current git commit as the deployment tag"
 echo "$mytag" | tee "$project_path/.current_tag"
 
-mylog "buildah push image to registry "
-#  buildah push --tls-verify=false hello-api:latest docker://k8master:5000/hello-api:latest
+mylog "docker push image to registry "
+#  docker push --tls-verify=false hello-api:latest docker://k8master:5000/hello-api:latest
 #  docker prefix is required
 
-buildah push --tls-verify=false \
+docker push --tls-verify=false \
     ${latestimage} "docker://${registry_url}/${latestimage}"
 
 mylog "tag   to ${myimage}"
-buildah tag  ${latestimage} "${myimage}"
+docker tag  ${latestimage} "${myimage}"
 
 # required only on first time
 kubectl scale deployment $module --replicas=0 || true

@@ -63,11 +63,11 @@ start_log_file() {
 
 
 image_exists() {
-    buildah inspect "$1" >/dev/null 2>&1
+    docker inspect "$1" >/dev/null 2>&1
 }
 
 renameWithTimestamp() {
-    local created=$(buildah inspect -f '{{.Docker.Created}}' "$1" )
+    local created=$(docker inspect -f '{{.Created}}' "$1" )
     local timestamp=$(date -d "$created" +%Y%m%d%H%M%S 2>/dev/null || echo "unknown")
     echo $module:$timestamp
 }
@@ -88,7 +88,7 @@ check_status() {
     kubectl get all | grep -E "hello-api|hello-ui|registry" || true
 
     mylog "docker images"
-    buildah images
+    docker images
 
 }
 
@@ -113,12 +113,12 @@ clean_string() {
 cleanup_images() {
     local repo="$1"
 
-    buildah images --format "{{.Name}} {{.Tag}}" |
+    docker images --format "{{.Repository}} {{.Tag}}" |
     grep "${repo}" |
     while read -r name tag; do
         if [ "$tag" != "latest" ]; then
             echo "Deleting ${name}:${tag}"
-            buildah rmi "${name}:${tag}"
+            docker rmi "${name}:${tag}"
         fi
     done
 }
