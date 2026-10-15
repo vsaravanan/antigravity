@@ -1,5 +1,5 @@
 # Dockerfile for hello-ui (Next.js frontend)
-# Built on k8master using: buildah bud -t hello-ui:latest -f deploy/Dockerfile .
+# Built on k8master using: podman bud -t hello-ui:latest -f deploy/Dockerfile .
 #
 # pnpm install and pnpm run build already happened externally by
 # k8master-build-ui.sh before this runs, so this is a single stage -

@@ -51,8 +51,8 @@ alias klf='kubectl logs -f'  # follow logs
 
 # df -h /
 
-# buildah images
-# buildah rmi --all --force
+# podman images
+# podman rmi --all --force
 
     # # file push from host to k8master
     # lxc file push -r /data/antigravity/hello-api k8master/data/java
@@ -70,10 +70,10 @@ alias klf='kubectl logs -f'  # follow logs
 #  kubectl get svc hello-ui-svc -o yaml | grep -A 10 nodePort
 
 # "Build image with Buildah"
-# buildah bud -t "$myimage" -f deploy/Dockerfile .
+# podman bud -t "$myimage" -f deploy/Dockerfile .
 
 # "Push image to registry"
-# buildah push     "${myimage}" "docker://$registry_url/${myimage}"
+# podman push     "${myimage}" "docker://$registry_url/${myimage}"
 
 # kubectl apply -f $deploy_path/$module.yaml
 

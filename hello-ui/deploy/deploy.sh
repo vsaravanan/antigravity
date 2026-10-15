@@ -32,8 +32,8 @@ kubectl get all -A | grep -E "registry|hello" || true
 mylog "check status of Evicted and Error"
 kubectl get all -A | grep -E "Evicted|Error" || true
 
-mylog "buildah images"
-buildah images
+mylog "podman images"
+podman images
 
 log_info "deploy $module complete on $HOST."
 

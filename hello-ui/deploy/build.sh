@@ -37,31 +37,31 @@ cd "$project_path"
 
 
 if [ "${1:-}" = "base" ]; then
-    mylog "🚀 buildah building base image ..."
-    #  buildah bud -t hello-ui-base:latest -f deploy/Dockerfile.base:
-    buildah bud -t "$myimage_base" -f deploy/Dockerfile.base
+    mylog "🚀 podman building base image ..."
+    #  podman bud -t hello-ui-base:latest -f deploy/Dockerfile.base:
+    podman bud -t "$myimage_base" -f deploy/Dockerfile.base
 
-    mylog " buildah pushing base image to registry"
-    buildah push --tls-verify=false "$myimage_base" "docker://${registry_url}/${myimage_base}"
-    # buildah push --tls-verify=false hello-ui-base:latest docker://k8master:5000/hello-ui-base:latest
+    mylog " podman pushing base image to registry"
+    podman push --tls-verify=false "$myimage_base" "docker://${registry_url}/${myimage_base}"
+    # podman push --tls-verify=false hello-ui-base:latest docker://k8master:5000/hello-ui-base:latest
     mylog "✅ Base image built and pushed!"
 fi
 
 mylog "Record current git commit as the deployment tag"
 echo "$mytag" | tee "$project_path/.current_tag"
 
-mylog "🚀 buildah building latest image ..."
-# buildah bud -t hello-ui:latest -f deploy/Dockerfile .
-buildah bud -t "${latestimage}" -f deploy/Dockerfile .
+mylog "🚀 podman building latest image ..."
+# podman bud -t hello-ui:latest -f deploy/Dockerfile .
+podman bud -t "${latestimage}" -f deploy/Dockerfile .
 
 
-mylog "buildah push image to registry "
-# buildah push --tls-verify=false hello-ui:latest docker://k8master:5000/hello-ui:latest
-buildah push --tls-verify=false \
+mylog "podman push image to registry "
+# podman push --tls-verify=false hello-ui:latest docker://k8master:5000/hello-ui:latest
+podman push --tls-verify=false \
     "${latestimage}" "docker://$registry_url/${latestimage}"
 
 mylog "tag   to ${myimage}"
-buildah tag  ${latestimage} "${myimage}"
+podman tag  ${latestimage} "${myimage}"
 
 kubectl scale deployment $module --replicas=0 || true
 
