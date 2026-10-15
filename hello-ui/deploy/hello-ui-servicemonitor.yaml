@@ -1,0 +1,19 @@
+# filename : hello-ui-servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: hello-ui
+  namespace: monitoring
+  labels:
+    release: monitoring   # must match your helm release name — this is what the operator watches for
+spec:
+  namespaceSelector:
+    matchNames:
+      - default        # namespace where hello-api's Service actually lives
+  selector:
+    matchLabels:
+      app: hello-ui-svc    # must match the labels on your hello-api Service
+  endpoints:
+    - port: http        # must match the named port in your hello-api Service spec
+      path: /actuator/prometheus
+      interval: 15s

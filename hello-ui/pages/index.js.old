@@ -1,0 +1,11 @@
+import Hello from '@/components/hello'
+
+const Index = () => {
+  return (
+    <div>
+      <Hello></Hello>
+    </div>
+  )
+}
+
+export default Index

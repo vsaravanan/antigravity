@@ -1,0 +1,79 @@
+root@k8master:/data/fe/hello-ui/deploy# kubectl describe svc hello-ui-svc ;
+Name:                     hello-ui-svc
+Namespace:                default
+Labels:                   <none>
+Annotations:              <none>
+Selector:                 app=hello-ui
+Type:                     NodePort
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.99.241.105
+IPs:                      10.99.241.105
+Port:                     <unset>  3000/TCP
+TargetPort:               3000/TCP
+NodePort:                 <unset>  30030/TCP
+Endpoints:                10.244.2.58:3000
+Session Affinity:         None
+External Traffic Policy:  Cluster
+Internal Traffic Policy:  Cluster
+Events:                   <none>
+
+
+root@k8master:/data/fe/hello-ui/deploy# kubectl get endpoints hello-ui-src
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+Error from server (NotFound): endpoints "hello-ui-src" not found
+
+
+
+root@k8master:/data/fe/hello-ui/deploy# kubectl describe pod hello-ui-587b4b5484-m5rr7
+Name:             hello-ui-587b4b5484-m5rr7
+Namespace:        default
+Priority:         0
+Service Account:  default
+Node:             k8worker1/192.168.100.11
+Start Time:       Thu, 09 Jul 2026 04:59:06 +0000
+Labels:           app=hello-ui
+                  pod-template-hash=587b4b5484
+Annotations:      <none>
+Status:           Running
+IP:               10.244.2.58
+IPs:
+  IP:           10.244.2.58
+
+
+
+kubectl get pod hello-ui-587b4b5484-m5rr7 -o yaml | grep -A 5 -B 5 ports
+
+root@k8master:/data/fe/hello-ui/deploy# kubectl get pod hello-ui-587b4b5484-m5rr7 -o yaml | grep -A 5 -B 5 ports
+spec:
+  containers:
+  - image: k8master:5000/hello-ui:latest
+    imagePullPolicy: Always
+    name: hello-ui
+    ports:
+    - containerPort: 3000
+      protocol: TCP
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+
+
+ kubectl get svc hello-ui-svc -o yaml | grep -A 10 nodePort
+
+
+  clusterIP: 10.99.241.105
+  clusterIPs:
+  - 10.99.241.105
+  externalTrafficPolicy: Cluster
+--
+  - nodePort: 30030
+    port: 3000
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: hello-ui
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
+

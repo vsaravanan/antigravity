@@ -1,0 +1,26 @@
+# Dockerfile for hello-ui (Next.js frontend)
+# Built on k8master using: buildah bud -t hello-ui:latest -f deploy/Dockerfile .
+#
+# pnpm install and pnpm run build already happened externally by
+# k8master-build-ui.sh before this runs, so this is a single stage -
+# no separate builder/runner containers, just package and run.
+
+FROM node:22-alpine
+WORKDIR /app
+
+# RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+# RUN nvm install --lts
+
+RUN npm install -g npm
+
+RUN npm install -g pnpm@latest
+
+RUN pnpm self-update latest
+
+RUN apk add --no-cache curl
+
+
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile --ignore-scripts

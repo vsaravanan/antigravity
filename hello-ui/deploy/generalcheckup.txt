@@ -1,0 +1,52 @@
+kubectl delete deployment nginx-test --ignore-not-found
+kubectl delete svc nginx-test --ignore-not-found
+
+
+kubectl delete deployment hello-ui --ignore-not-found
+kubectl delete svc hello-ui-svc --ignore-not-found
+
+kubectl delete pod -l app=hello-ui
+
+clear; kubectl get all -A 
+
+
+NAMESPACE      NAME                                   READY   STATUS    RESTARTS        AGE
+default        pod/hello-api-d74cb56d5-nxg5n          1/1     Running   0               5h7m
+default        pod/hello-ui-587b4b5484-m5rr7          1/1     Running   18 (143m ago)   3h26m
+
+
+NAMESPACE     NAME                    TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                  AGE
+default       service/hello-api-svc   NodePort    10.102.195.85    <none>        80:30080/TCP             5h7m
+default       service/hello-ui-svc    NodePort    10.99.241.105    <none>        3000:30030/TCP           3h26m
+
+
+
+NAMESPACE     NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+default       deployment.apps/hello-api   1/1     1            1           5h7m
+default       deployment.apps/hello-ui    1/1     1            1           3h26m
+
+
+NAMESPACE     NAME                                  DESIRED   CURRENT   READY   AGE
+default       replicaset.apps/hello-api-d74cb56d5   1         1         1       5h7m
+default       replicaset.apps/hello-ui-587b4b5484   1         1         1       3h26m
+
+
+root@k8master:~#  kubectl get all -A  | grep hello
+default        pod/hello-api-d74cb56d5-nxg5n          1/1     Running   0               5h10m
+default        pod/hello-ui-587b4b5484-m5rr7          1/1     Running   18 (146m ago)   3h29m
+default       service/hello-api-svc   NodePort    10.102.195.85    <none>        80:30080/TCP             5h10m
+default       service/hello-ui-svc    NodePort    10.99.241.105    <none>        3000:30030/TCP           3h29m
+default       deployment.apps/hello-api   1/1     1            1           5h10m
+default       deployment.apps/hello-ui    1/1     1            1           3h29m
+default       replicaset.apps/hello-api-d74cb56d5   1         1         1       5h10m
+default       replicaset.apps/hello-ui-587b4b5484   1         1         1       3h29m
+
+
+$ grep -rn Port --include=*.yaml .
+./backup/files/hello-api.yaml:21:            - containerPort: 8080
+./backup/files/hello-api.yaml:28:  type: NodePort
+./backup/files/hello-api.yaml:33:      targetPort: 8080
+./backup/files/hello-api.yaml:34:      nodePort: 30080
+./backup/files/hello-ui.yaml:21:            - containerPort: 3000
+./backup/files/hello-ui.yaml:28:  type: NodePort
+./backup/files/hello-ui.yaml:33:      targetPort: 3000
