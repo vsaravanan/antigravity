@@ -41,7 +41,7 @@ cd "$project_path"
 if [ "${1:-}" = "base" ]; then
     mylog "🚀 podman building base image ..."
     #  podman build -t hello-ui-base:latest -f deploy/Dockerfile.base:
-    podman build -t "$myimage_base" -f deploy/Dockerfile.base
+    podman build -t "$myimage_base" -f deploy/Dockerfile.base ./
 
     mylog " podman pushing base image to registry"
     podman push --tls-verify=false "$myimage_base" "docker://${registry_url}/${myimage_base}"
