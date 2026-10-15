@@ -40,8 +40,8 @@ cd "$project_path"
 
 if [ "${1:-}" = "base" ]; then
     mylog "🚀 podman building base image ..."
-    #  podman bud -t hello-ui-base:latest -f deploy/Dockerfile.base:
-    podman bud -t "$myimage_base" -f deploy/Dockerfile.base
+    #  podman build -t hello-ui-base:latest -f deploy/Dockerfile.base:
+    podman build -t "$myimage_base" -f deploy/Dockerfile.base
 
     mylog " podman pushing base image to registry"
     podman push --tls-verify=false "$myimage_base" "docker://${registry_url}/${myimage_base}"
@@ -53,8 +53,8 @@ mylog "Record current git commit as the deployment tag"
 echo "$mytag" | tee "$project_path/.current_tag"
 
 mylog "🚀 podman building latest image ..."
-# podman bud -t hello-ui:latest -f deploy/Dockerfile .
-podman bud -t "${latestimage}" -f deploy/Dockerfile .
+# podman build -t hello-ui:latest -f deploy/Dockerfile .
+podman build -t "${latestimage}" -f deploy/Dockerfile .
 
 
 mylog "podman push image to registry "
