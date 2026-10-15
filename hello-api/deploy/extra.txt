@@ -98,12 +98,12 @@ kga | grep -E 'hello|registry'
 kdd registry ; kds  registry-svc ; kdd hello-api  ; kds hello-api-svc
 kga | grep -E 'hello|registry'
 
-cd /data/fe/hello-ui/deploy;  git reset --hard; git pull ; chmod +x *.sh ;
+cd /data/antigravity/hello-ui/deploy;  git reset --hard; git pull ; chmod +x *.sh ;
 cd /data/antigravity/hello-api/deploy;  git reset --hard; git pull ; chmod +x *.sh ;
 
 kubectl apply -f /data/antigravity/hello-api/deploy/registry.yaml
 kubectl apply -f /data/antigravity/hello-api/deploy/hello-api.yaml
-kubectl apply -f /data/fe/hello-ui/deploy/hello-ui.yaml
+kubectl apply -f /data/antigravity/hello-ui/deploy/hello-ui.yaml
 kubectl scale deployment registry hello-api hello-ui --replicas=0
 kubectl scale deployment registry --replicas=1
 rm /data/logs/hello-api/*
@@ -234,7 +234,7 @@ kubectl create deployment hello-api --image=k8master:5000/hello-api:72fbff8-repl
   buildah rmi --all --force
 
 
-root@k8master:/data/fe/hello-ui/deploy# kubectl get events --sort-by=.lastTimestamp
+root@k8master:/data/antigravity/hello-ui/deploy# kubectl get events --sort-by=.lastTimestamp
 
 watch -n 2 'kubectl get events --sort-by=.lastTimestamp'
 
@@ -278,10 +278,10 @@ kubectl events --watch
 
 =========================== ALWAYS CHECK FOR FAILURES
 
-root@k8master:/data/fe/hello-ui/deploy# curl http://localhost:5000/v2/_catalog
+root@k8master:/data/antigravity/hello-ui/deploy# curl http://localhost:5000/v2/_catalog
 {"repositories":["hello-api"]}
 
-root@k8master:/data/fe/hello-ui/deploy# curl http://localhost:5000/v2/hello-api/tags/list
+root@k8master:/data/antigravity/hello-ui/deploy# curl http://localhost:5000/v2/hello-api/tags/list
 {"name":"hello-api","tags":["e9d11fc-removedech"]}
 
 

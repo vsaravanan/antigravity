@@ -1,4 +1,4 @@
-root@k8master:/data/fe/hello-ui/deploy# kubectl describe svc hello-ui-svc ;
+root@k8master:/data/antigravity/hello-ui/deploy# kubectl describe svc hello-ui-svc ;
 Name:                     hello-ui-svc
 Namespace:                default
 Labels:                   <none>
@@ -19,13 +19,13 @@ Internal Traffic Policy:  Cluster
 Events:                   <none>
 
 
-root@k8master:/data/fe/hello-ui/deploy# kubectl get endpoints hello-ui-src
+root@k8master:/data/antigravity/hello-ui/deploy# kubectl get endpoints hello-ui-src
 Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
 Error from server (NotFound): endpoints "hello-ui-src" not found
 
 
 
-root@k8master:/data/fe/hello-ui/deploy# kubectl describe pod hello-ui-587b4b5484-m5rr7
+root@k8master:/data/antigravity/hello-ui/deploy# kubectl describe pod hello-ui-587b4b5484-m5rr7
 Name:             hello-ui-587b4b5484-m5rr7
 Namespace:        default
 Priority:         0
@@ -44,7 +44,7 @@ IPs:
 
 kubectl get pod hello-ui-587b4b5484-m5rr7 -o yaml | grep -A 5 -B 5 ports
 
-root@k8master:/data/fe/hello-ui/deploy# kubectl get pod hello-ui-587b4b5484-m5rr7 -o yaml | grep -A 5 -B 5 ports
+root@k8master:/data/antigravity/hello-ui/deploy# kubectl get pod hello-ui-587b4b5484-m5rr7 -o yaml | grep -A 5 -B 5 ports
 spec:
   containers:
   - image: k8master:5000/hello-ui:latest
