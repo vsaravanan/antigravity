@@ -1,35 +1,76 @@
 # filename: redis.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: redis
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: redis-data
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes: [ReadWriteOnce]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  local:
+    path: /mnt/redis-data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values: [k8master]
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data
+  namespace: redis
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: ""
+  volumeName: redis-data
+  resources:
+    requests:
+      storage: 10Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis
   namespace: redis
-
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: redis
-
   template:
     metadata:
       labels:
         app: redis
-
     spec:
       containers:
         - name: redis
-
           image: redis:8-alpine
-
+          args: ["--appendonly", "yes"]
           ports:
             - containerPort: 6379
-
+          volumeMounts:
+            - name: data
+              mountPath: /data
           resources:
             requests:
               cpu: 100m
               memory: 128Mi
-
             limits:
               cpu: 500m
               memory: 512Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: redis-data
