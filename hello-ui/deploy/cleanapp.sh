@@ -29,7 +29,7 @@ service="$module-svc"
 #    podman rmi "$repo:$tag" || true
 #done
 
-podman images --format "{{.Name}}:{{.Tag}}" \
+podman images --format "{{.Repository}}:{{.Tag}}" \
 | grep "^localhost/$module" \
 | xargs -r podman rmi || true
 

@@ -113,7 +113,7 @@ clean_string() {
 cleanup_images() {
     local repo="$1"
 
-    podman images --format "{{.Name}} {{.Tag}}" |
+    podman images --format "{{.Repository}} {{.Tag}}" |
     grep "${repo}" |
     while read -r name tag; do
         if [ "$tag" != "latest" ]; then
