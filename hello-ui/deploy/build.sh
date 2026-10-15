@@ -25,7 +25,7 @@ latestimage="${module}:latest"
 mylog "Install dependencies with pnpm"
 cd "$project_path"
 pnpm self-update latest
-pnpm install --frozen-lockfile
+pnpm install 
 
 mylog "Build with pnpm"
 cd "$project_path"
