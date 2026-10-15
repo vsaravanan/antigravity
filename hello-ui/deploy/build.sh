@@ -24,8 +24,9 @@ latestimage="${module}:latest"
 
 mylog "Install dependencies with pnpm"
 cd "$project_path"
-pnpm self-update latest
-pnpm install 
+
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 pnpm self-update latest
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 pnpm install --frozen-lockfile
 
 mylog "Build with pnpm"
 cd "$project_path"
