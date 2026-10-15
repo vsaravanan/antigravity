@@ -169,8 +169,8 @@ mylog "🚀 buildah building latest image ..."
 # buildah bud -t hello-api:latest -f deploy/Dockerfile .
 buildah bud -t "$myimage" -f deploy/Dockerfile .
 
-#  buildah push    hello-api:latest docker://k8master:5000/hello-api:latest
-buildah push    "${myimage}" "docker://${registry_url}/${myimage}"
+#  buildah push --tls-verify=false hello-api:latest docker://k8master:5000/hello-api:latest
+buildah push --tls-verify=false "${myimage}" "docker://${registry_url}/${myimage}"
 
 kubectl scale deployment $module --replicas=0
 
@@ -203,7 +203,7 @@ kubectl rollout status deployment/hello-api
 rollback to previous version
 
 buildah tag 3087ce063538 hello-ui:latest
-buildah push    hello-ui:latest docker://k8master:5000/hello-ui:latest
+buildah push --tls-verify=false hello-ui:latest docker://k8master:5000/hello-ui:latest
 kubectl set image deployment/hello-ui hello-ui=k8master:5000/hello-ui:latest not used
 kubectl rollout restart deployment/hello-ui
 kubectl rollout status deployment/hello-ui not used
