@@ -27,22 +27,22 @@ mvn clean package
 
 mylog "Build image with Podman"
 cd $project_path
-mylog "🚀 podman building latest image ..."
-# podman build -t hello-api:latest -f deploy/Dockerfile .
-podman build -t "${latestimage}" -f deploy/Dockerfile .
+mylog "🚀 buildah building latest image ..."
+# buildah build -t hello-api:latest -f deploy/Dockerfile .
+buildah build -t "${latestimage}" -f deploy/Dockerfile .
 
 mylog "Record current git commit as the deployment tag"
 echo "$mytag" | tee "$project_path/.current_tag"
 
-mylog "podman push image to registry "
-#  podman push  --tls-verify=false  hello-api:latest docker://k8master:5000/hello-api:latest
+mylog "buildah push image to registry "
+#  buildah push  --tls-verify=false  hello-api:latest docker://k8master:5000/hello-api:latest
 #  docker prefix is required
 
-podman push  --tls-verify=false  \
+buildah push  --tls-verify=false  \
     ${latestimage} "docker://${registry_url}/${latestimage}"
 
 mylog "tag   to ${myimage}"
-podman tag  ${latestimage} "${myimage}"
+buildah tag  ${latestimage} "${myimage}"
 
 # required only on first time
 kubectl scale deployment $module --replicas=0 || true

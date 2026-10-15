@@ -20,7 +20,7 @@ Error: trying to reuse blob sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc3032
   Get "https://k8master:5000/v2/": http: server 
   gave HTTP response to HTTPS client
 
-podman push --tls-verify=false hello-api:latest docker://k8master:5000/hello-api:latest
+buildah push --tls-verify=false hello-api:latest docker://k8master:5000/hello-api:latest
 
 Linux: Edit /etc/docker/daemon.json:
 

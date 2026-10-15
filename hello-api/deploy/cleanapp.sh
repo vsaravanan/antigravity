@@ -25,13 +25,13 @@ check_status
 module=$1
 service="$module-svc"
 
-#podman images | grep "^localhost/${module}" | while read repo tag rest; do
-#    podman rmi "$repo:$tag" || true
+#buildah images | grep "^localhost/${module}" | while read repo tag rest; do
+#    buildah rmi "$repo:$tag" || true
 #done
 
-podman images --format "{{.Name}}:{{.Tag}}" \
+buildah images --format "{{.Name}}:{{.Tag}}" \
 | grep "^localhost/$module" \
-| xargs -r podman rmi || true
+| xargs -r buildah rmi || true
 
 
 kubectl scale deployment $module --replicas=0 || true
