@@ -26,7 +26,7 @@ mylog "Install dependencies with pnpm"
 cd "$project_path"
 
 COREPACK_ENABLE_DOWNLOAD_PROMPT=0 corepack install -g pnpm@latest
-COREPACK_ENABLE_DOWNLOAD_PROMPT=0 pnpm install --frozen-lockfile
+COREPACK_ENABLE_DOWNLOAD_PROMPT=0 pnpm install 
 
 mylog "Build with pnpm"
 cd "$project_path"
