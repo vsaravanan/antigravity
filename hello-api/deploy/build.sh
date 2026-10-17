@@ -52,7 +52,7 @@ kubectl delete deployment $module --ignore-not-found
 #kubectl delete service $module-svc --ignore-not-found
 
 mylog "Apply $module manifest"
-kubectl apply -f "$deploy_path/$module.yaml"
+kubectl apply -f "$root_path/yaml/$module.yaml"
 
 mylog "wait for deployment"
 kubectl wait --for=create deployment/$module --timeout=30s

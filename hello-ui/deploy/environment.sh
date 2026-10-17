@@ -8,10 +8,11 @@ HOST="k8master"
 git_url="https://github.com/vsaravanan/hello-ui.git"
 module=hello-ui
 service="$module-svc"
-project_path=/data/antigravity/hello-ui
+root_path="/data/antigravity"
+project_path="$root_path/$module"
 deploy_path="$project_path/deploy"
 registry_url="k8master:5000"
-myimage_base="hello-ui-base:latest"
-myimage="hello-ui:latest"
+myimage_base="$module-base:latest"
+myimage="$module:latest"
 
 
