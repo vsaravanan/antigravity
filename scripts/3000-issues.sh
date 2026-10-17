@@ -154,8 +154,7 @@ k8master:5000/hello-api:latest
 
 
 
-viswar@k8s:~$ lxc exec k8worker1 -- bash -lc \
-  'curl -v --connect-timeout 5 http://k8master:5000/v2/'
+viswar@k8s:~$ lxc exec k8worker1 -- bash -lc 'curl -v --connect-timeout 5 http://k8master:5000/v2/'
 * Host k8master:5000 was resolved.
 * IPv6: (none)
 * IPv4: 192.168.100.10
@@ -179,3 +178,74 @@ NAME                           CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS
 persistentvolume/keycloak-pv   5Gi        RWO            Retain           Bound    keycloak/keycloak-pvc   keycloak-local   <unset>                          30d
 persistentvolume/redis-data    10Gi       RWO            Retain           Bound    redis/redis-data                         <unset>                          41h
 
+
+
+kubectl delete deployment redis   -n redis
+kubectl delete service redis      -n redis
+kubectl delete pod redis-5f567588fc-ds229   -n redis
+kubectl delete replicaset redis-5f567588fc  -n redis
+
+kubectl scale deployment hello-api --replicas=1
+
+
+======================================================
+
+
+default       pod/hello-api-6b4b6855f5-2bk5f         0/1     CrashLoopBackOff   16 (2m7s ago)    82m
+default       service/hello-api-svc                        NodePort       10.109.167.208   <none>            80:30080/TCP                    82m
+default       deployment.apps/hello-api         0/1     1            0           82m
+default       replicaset.apps/hello-api-6b4b6855f5         1         1         0       82m
+
+
+
+viswar@k8s:/data/antigravity/hello-api/deploy$ kubectl describe pod -l app=hello-api | grep -A 10 Events
+Events:
+  Type     Reason   Age                   From     Message
+  ----     ------   ----                  ----     -------
+  Normal   Pulled   51m                   kubelet  spec.containers{hello-api}: Successfully pulled image "k8master:5000/hello-api:latest" in 893ms (2.135s including waiting). Image size: 133085576 bytes.
+  Normal   Pulled   26m                   kubelet  spec.containers{hello-api}: Successfully pulled image "k8master:5000/hello-api:latest" in 736ms (1.152s including waiting). Image size: 133085576 bytes.
+  Warning  BackOff  4m42s (x43 over 80m)  kubelet  spec.containers{hello-api}: Back-off restarting failed container hello-api in pod hello-api-6b4b6855f5-2bk5f_default(ef5d0c4c-6b96-45cf-9e4b-2dc06e9673a6)
+  Normal   Pulling  2m51s (x17 over 82m)  kubelet  spec.containers{hello-api}: Pulling image "k8master:5000/hello-api:latest"
+
+viswar@k8s:/data/antigravity/hello-api/deploy$ podman images
+REPOSITORY                         TAG               IMAGE ID      CREATED            SIZE
+localhost/hello-api                83bb99e-analysis  c67ca31b9254  About an hour ago  289 MB
+localhost/hello-api                latest            c67ca31b9254  About an hour ago  289 MB
+
+
+viswar@k8s:/data/antigravity/hello-api/deploy$ lxc exec k8worker1 -- bash -lc 'curl -v --connect-timeout 5 http://k8master:5000/v2/'
+* Host k8master:5000 was resolved.
+* IPv6: (none)
+* IPv4: 192.168.100.10
+*   Trying 192.168.100.10:5000...
+* Established connection to k8master (192.168.100.10 port 5000) from 192.168.100.11 port 39958
+* using HTTP/1.x
+> GET /v2/ HTTP/1.1
+> Host: k8master:5000
+> User-Agent: curl/8.18.0
+> Accept: */*
+>
+* Request completely sent off
+< HTTP/1.1 200 OK
+
+
+Previous: ImagePullBackOff — image unavailable.
+Current: CrashLoopBackOff — the container starts and then exits repeatedly.
+
+======================================================
+
+
+kubectl logs pod/hello-api-6b4b6855f5-2bk5f
+
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'redisService' defined in URL [jar:nested:/app/hello-api.jar/!BOOT-INF/classes/!/com/saravanjs/hello/service/RedisService.class]:
+
+Caused by: org.redisson.client.RedisConnectionException: java.net.UnknownHostException: Failed to resolve 'redis.redis.svc.cluster.local' [A(1)]
+
+======================================================
+
+
+
+kubectl delete ns redis --ignore-not-found
+kubectl delete pv redis-data --ignore-not-found
+namespace "redis" deleted
+persistentvolume "redis-data" deleted

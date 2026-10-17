@@ -5,9 +5,9 @@ persistentvolumeclaim/redis-data created
 deployment.apps/redis created
 
 
-viswar@k8s:/data/antigravity/redis$ kubectl apply -f redis-service.yaml
-service/redis created
-viswar@k8s:/data/antigravity/redis$
+# viswar@k8s:/data/antigravity/redis$ kubectl apply -f redis-service.yaml
+# service/redis created
+
 
 
 kubectl create namespace redis
@@ -16,7 +16,7 @@ mkdir -p /data/redis
 cd /data/redis
 
 kubectl apply -f redis.yaml
-kubectl apply -f redis-service.yaml
+# kubectl apply -f redis-service.yaml
 
 kubectl run redis-test \
     --rm -it \
