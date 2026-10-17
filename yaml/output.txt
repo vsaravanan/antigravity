@@ -1,0 +1,26 @@
+
+viswar@k8s:/data/antigravity/yaml$ k apply -k .
+namespace/redis unchanged
+service/redis-svc unchanged
+service/hello-api-svc unchanged
+service/registry-svc unchanged
+persistentvolume/redis-data configured
+persistentvolumeclaim/redis-data unchanged
+deployment.apps/redis unchanged
+deployment.apps/hello-api unchanged
+deployment.apps/registry unchanged
+ingress.networking.k8s.io/hello-api created
+
+
+
+k delete -k .
+namespace "redis" deleted
+service "redis-svc" deleted
+service "hello-api-svc" deleted
+service "registry-svc" deleted
+persistentvolume "redis-data" deleted
+persistentvolumeclaim "redis-data" deleted
+deployment.apps "redis" deleted
+deployment.apps "hello-api" deleted
+deployment.apps "registry" deleted
+ingress.networking.k8s.io "hello-api" deleted
