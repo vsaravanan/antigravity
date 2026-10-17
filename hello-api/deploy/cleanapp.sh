@@ -29,6 +29,16 @@ service="$module-svc"
 #    podman rmi "$repo:$tag" || true
 #done
 
+# check which containers reference it:
+# podman ps -a --no-trunc
+
+# podman image prune
+# WARNING! This command removes all dangling images.
+
+# podman images --format '{{.Repository}}:{{.Tag}}' \
+#   | grep '^localhost/' \
+#   | xargs -r podman rmi
+
 podman images --format "{{.Repository}}:{{.Tag}}" \
 | grep "^localhost/$module" \
 | xargs -r podman rmi || true
