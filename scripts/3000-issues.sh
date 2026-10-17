@@ -249,3 +249,81 @@ kubectl delete ns redis --ignore-not-found
 kubectl delete pv redis-data --ignore-not-found
 namespace "redis" deleted
 persistentvolume "redis-data" deleted
+
+======================================================
+
+
+
+# 1. Clean up the earlier attempt
+kubectl delete ns redis --ignore-not-found
+kubectl delete pv redis-data --ignore-not-found
+
+# 2. Apply
+kubectl apply -f redis.yaml
+
+# 3. Check
+kubectl -n redis get pod,pvc,pv,svc
+kubectl -n redis exec deploy/redis -- redis-cli ping
+
+
+viswar@k8s:/data/antigravity/redis$ kubectl -n redis get pod,pvc,pv,svc
+NAME                         READY   STATUS    RESTARTS   AGE
+pod/redis-79d84fcd75-sdmb7   1/1     Running   0          46s
+
+NAME                               STATUS   VOLUME       CAPACITY   ACCESS MODES   STORAGECLASS   VOLUMEATTRIBUTESCLASS   AGE
+persistentvolumeclaim/redis-data   Bound    redis-data   10Gi       RWO                           <unset>                 46s
+
+NAME                           CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                   STORAGECLASS     VOLUMEATTRIBUTESCLASS   REASON   AGE
+persistentvolume/keycloak-pv   5Gi        RWO            Retain           Bound    keycloak/keycloak-pvc   keycloak-local   <unset>                          30d
+persistentvolume/redis-data    10Gi       RWO            Retain           Bound    redis/redis-data                         <unset>                          46s
+
+NAME                TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+service/redis-svc   NodePort   10.107.123.176   <none>        6379:30079/TCP   46s
+
+
+viswar@k8s:/data/antigravity/redis$ kubectl -n redis describe pod -l app=redis | sed -n '/Events:/,$p'
+Events:
+  Type    Reason     Age    From               Message
+  ----    ------     ----   ----               -------
+  Normal  Scheduled  4m3s   default-scheduler  Successfully assigned redis/redis-79d84fcd75-sdmb7 to k8master
+  Normal  Pulling    4m1s   kubelet            spec.containers{redis}: Pulling image "redis:8-alpine"
+  Normal  Pulled     3m30s  kubelet            spec.containers{redis}: Successfully pulled image "redis:8-alpine" in 30.633s (30.633s including waiting). Image size: 39122324 bytes.
+  Normal  Created    3m30s  kubelet            spec.containers{redis}: Container created
+  Normal  Started    3m29s  kubelet            spec.containers{redis}: Container started
+
+
+
+viswar@k8s:/data/antigravity/redis$ kubectl -n redis exec deploy/redis -- redis-cli ping
+PONG
+
+kubectl exec -n redis deployment/redis -- redis-cli CONFIG GET appendonly
+appendonly
+yes
+
+kubectl exec -n redis deployment/redis -- redis-cli INFO persistence
+# Persistence
+loading:0
+
+
+kubectl scale deployment hello-api --replicas=2
+
+
+viswar@k8s:/data/antigravity/redis$ kubectl get pods -l app=hello-api -w
+NAME                         READY   STATUS    RESTARTS        AGE
+hello-api-6b4b6855f5-5cdd4   1/1     Running   2 (20s ago)     96s
+hello-api-6b4b6855f5-thslv   0/1     Error     4 (4m46s ago)   8m36s
+
+
+viswar@k8s:/data/antigravity/hello-api/deploy$ kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
+NAME        TAINTS
+k8master    [map[effect:NoSchedule key:node-role.kubernetes.io/control-plane]]
+k8worker1   <none>
+viswar@k8s:/data/antigravity/hello-api/deploy$ kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-
+node/k8master untainted
+error: taint "node-role.kubernetes.io/control-plane:NoSchedule" not found
+viswar@k8s:/data/antigravity/hello-api/deploy$ kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
+NAME        TAINTS
+k8master    <none>
+k8worker1   <none>
+
+
