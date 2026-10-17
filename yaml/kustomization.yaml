@@ -5,3 +5,5 @@ resources:
   - redis.yaml
   - hello-api.yaml
   - hello-api-ingress.yaml
+  - hello-ui.yaml
+  
