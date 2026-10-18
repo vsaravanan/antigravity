@@ -44,11 +44,11 @@ TOOL_POOLS=(${POOL_NAME})
 
 
 # ---------------------------------------------------------------------------
-log "==> Passing every tool-specific directory into k8master for later PersistentVolume use"
+log "==> Passing every tool-specific directory into k8worker1 for later PersistentVolume use"
 for pool in "${TOOL_POOLS[@]}"; do
   name="${pool%pool}"
-  log "lxc config device add k8master ${name}-data disk source=/srv/${name}-data path=/mnt/${name}-data"
-  lxc config device add k8master "${name}-data" disk \
+  log "lxc config device add k8worker1 ${name}-data disk source=/srv/${name}-data path=/mnt/${name}-data"
+  lxc config device add k8worker1 "${name}-data" disk \
     source="/srv/${name}-data" path="/mnt/${name}-data"
 done
 
