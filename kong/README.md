@@ -336,5 +336,15 @@ pulumi stack rm dev
 
           lxc start k8master k8worker1
 
+          kubectl get pods -l app=hello-api -w -n backend
+
+          kubectl get pods -l app=hello-ui -w -n frontend
+
+          clear; kga | egrep "hello|redis"
+
+          https://192.168.100.240/api/hello
+
+          http://192.168.50.84:30030/another
+
 
 ```

@@ -1,0 +1,113 @@
+
+
+Sarav@swedha /cygdrive/d/practice/anti/antigravity/yaml
+$ curl -vk http://192.168.100.240/api/hello
+*   Trying 192.168.100.240:80...
+* connect to 192.168.100.240 port 80 from 0.0.0.0 port 60057 failed: Timed out
+* Failed to connect to 192.168.100.240:80 after 21010 ms: Could not connect to server
+* closing connection #0
+curl: (28) Failed to connect to 192.168.100.240:80 after 21010 ms: Could not connect to server
+
+
+
+viswar@k8s:/data/logs/hello-ui$   kubectl -n kube-system rollout restart daemonset cilium
+daemonset.apps/cilium restarted
+
+Sarav@swedha /cygdrive/d/practice/anti/antigravity/yaml
+$ curl -vk http://192.168.100.240/api/hello
+*   Trying 192.168.100.240:80...
+* Established connection to 192.168.100.240 (192.168.100.240 port 80) from 192.168.50.127 port 51647
+* using HTTP/1.x
+> GET /api/hello HTTP/1.1
+> Host: 192.168.100.240
+> User-Agent: curl/8.21.0
+> Accept: */*
+>
+* Request completely sent off
+< HTTP/1.1 200
+< Content-Type: application/json
+< Transfer-Encoding: chunked
+< Connection: keep-alive
+< Vary: Origin
+< Vary: Access-Control-Request-Method
+< Vary: Access-Control-Request-Headers
+< Date: Sun, 18 Oct 2026 07:32:37 GMT
+< Server: kong/3.9.3
+< X-Kong-Upstream-Latency: 67
+< X-Kong-Proxy-Latency: 16
+< Via: 1.1 kong/3.9.3
+< X-Kong-Request-Id: 1cdbec00bee65210c81a0b4972962b4f
+<
+{"details":"Testing from hello-api-8fc466959-pjxkz"}* Connection #0 to host 192.168.100.240:80 left intact
+
+
+https://192.168.100.240/api/hello
+
+{"details":"Testing from hello-api-8fc466959-jvh2c"}
+
+
+=====================================================
+
+Front end is not working
+
+
+
+curl.exe -k https://192.168.100.240/another
+{
+  "message":"failure to get a peer from the ring-balancer",
+  "request_id":"2e04fd03dae6004766a64d204adfe904"
+}
+
+
+viswar@k8s:/data/antigravity/hello-ui/deploy$ curl -vk https://192.168.100.240/another
+*   Trying 192.168.100.240:443...
+* ALPN: curl offers h2,http/1.1
+* TLSv1.3 (OUT), TLS handshake, Client hello (1):
+* SSL Trust: peer verification disabled
+{
+  "message":"failure to get a peer from the ring-balancer",
+  "request_id":"98cd53572ec15869bd751554dfab104d"
+* Connection #0 to host 192.168.100.240:443 left intact
+
+
+
+
+viswar@k8s:/data/antigravity/hello-ui/deploy$ kubectl -n frontend get ingress hello-ui
+NAME       CLASS   HOSTS   ADDRESS   PORTS   AGE
+hello-ui   kong    *                 80      133m
+
+viswar@k8s:/data/antigravity/hello-ui/deploy$ kubectl -n frontend get svc hello-ui-svc
+NAME           TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+hello-ui-svc   NodePort   10.104.233.157   <none>        3000:30030/TCP   133m
+
+viswar@k8s:/data/antigravity/hello-ui/deploy$ kubectl -n frontend get endpoints hello-ui-svc
+Warning: v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice
+NAME           ENDPOINTS           AGE
+hello-ui-svc   10.244.1.207:3030   134m
+
+
+
+viswar@k8s:/data/antigravity/hello-ui/deploy$ kubectl -n frontend get svc hello-ui-svc -o jsonpath='{.spec.ports[*].port}{"\n"}'
+3000
+
+
+viswar@k8s:/data/antigravity/yaml$ grep -A12 'backend:' hello-ui-ingress.yaml
+            backend:
+              service:
+                name: hello-ui-svc
+                port:
+                  number: 80
+
+The Ingress sends traffic to port 80, but hello-ui-svc only exposes port 3000 (3000:30030/TCP). Kong finds no port 80 on that Service
+
+
+Edit hello-ui-ingress.yaml:
+
+yaml
+            backend:
+              service:
+                name: hello-ui-svc
+                port:
+                  number: 3000
+
+                  
