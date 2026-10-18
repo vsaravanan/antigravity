@@ -44,9 +44,15 @@ kubectl -n $ns delete deployment $module || true
 
 kubectl -n $ns delete rs   -l app=$module || true
 kubectl -n $ns delete pods -l app=$module || true
-kubectl -n $ns delete all  -l app=$module || true
+kubectl -n $ns delete ingress -l app=$module || true
+kubectl -n $ns delete pvc -l app=$module || true
+kubectl -n $ns delete configmap -l app=$module || true
+kubectl -n $ns delete secret -l app=$module || true
 
-kubectl get deploy,svc | grep -E "$module" || true
+kubectl -n $ns delete all  -l app=$module || true
+kubectl delete namespace $ns || true
+
+kubectl get all,deploy,svc,configmap,secret,pvc -n $ns || true
 
 check_status
 
