@@ -330,6 +330,10 @@ pulumi stack rm dev
 
           cd /data/antigravity/yaml
 
+          cd /data/logs/hello-api
+
+          cd /data/logs/hello-ui  
+
           k apply -k .
 
 
@@ -347,10 +351,10 @@ pulumi stack rm dev
           http://192.168.50.84:30030/another
 
           https://192.168.100.240/api/hello
-          
+
           http://192.168.100.240/another
 
-
+          kubectl -n backend logs -f -l app=hello-api --prefix --tail=20 --max-log-requests=10
 
 
 ```

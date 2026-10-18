@@ -15,10 +15,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class LoginController {
 
+    private final JwtUtil jwtUtil;
+
+    public LoginController(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
+
     @PostMapping("/login")
     public String login() {
 
-        return JwtUtil.createToken("userA");
+        return jwtUtil.createToken("userA");
 
     }
 

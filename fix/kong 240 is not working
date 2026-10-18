@@ -111,3 +111,23 @@ yaml
                   number: 3000
 
                   
+============================
+
+
+PS C:\Users\Sarav> curl.exe -k http://192.168.100.240/another
+curl: (28) Failed to connect to 192.168.100.240:80 after 21003 ms: Could not connect to server
+
+viswar@k8s:/data/antigravity/yaml$ curl -sk -o /dev/null -w '%{http_code}\n' https://192.168.100.240/another
+000
+viswar@k8s:/data/antigravity/yaml$ curl -sk -o /dev/null -w '%{http_code}\n' http://192.168.100.240/another
+000
+viswar@k8s:/data/antigravity/yaml$ kubectl -n kube-system rollout restart daemonset cilium
+kubectl -n kube-system rollout status daemonset cilium
+daemonset.apps/cilium restarted
+Waiting for daemon set "cilium" rollout to finish: 0 out of 2 new pods have been updated...
+Waiting for daemon set "cilium" rollout to finish: 1 out of 2 new pods have been updated...
+Waiting for daemon set "cilium" rollout to finish: 0 of 2 updated pods are available...
+Waiting for daemon set "cilium" rollout to finish: 1 of 2 updated pods are available...
+daemon set "cilium" successfully rolled out
+
+
