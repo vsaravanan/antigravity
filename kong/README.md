@@ -356,5 +356,10 @@ pulumi stack rm dev
 
           kubectl -n backend logs -f -l app=hello-api --prefix --tail=20 --max-log-requests=10
 
+          kubectl -n backend create secret generic jwt-secret --from-literal=secret="$(openssl rand -base64 48)"
+
+          kubectl -n backend get secret jwt-secret -o yaml     # shows the value still base64-encoded
+          kubectl -n backend describe secret jwt-secret
+          kubectl -n backend exec deploy/hello-api -- sh -c 'echo ${#JWT_SECRET}'
 
 ```

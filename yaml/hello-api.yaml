@@ -77,6 +77,12 @@ spec:
 
             - name: SERVER_PORT
               value: "8000"
+
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: secret
           ports:
             - containerPort: 8000
           volumeMounts:

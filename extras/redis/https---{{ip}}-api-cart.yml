@@ -8,7 +8,7 @@ http:
   url: https://{{ip}}/api/cart
   headers:
     - name: Authorization
-      value: Bearer     eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQSIsImlhdCI6MTc5MjMyNDQyOSwiZXhwIjoxNzkyMzI4MDI5fQ.6hZfajHhLXNrKL4_IB9Ef148ROZwXCXn8s8wWZBUq8A
+      value: "     eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQSIsImlhdCI6MTc5MjMyNDQyOSwiZXhwIjoxNzkyMzI4MDI5fQ.6hZfajHhLXNrKL4_IB9Ef148ROZwXCXn8s8wWZBUq8A"
 
 settings:
   encodeUrl: true

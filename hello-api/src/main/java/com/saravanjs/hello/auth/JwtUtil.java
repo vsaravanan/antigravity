@@ -3,6 +3,7 @@ package com.saravanjs.hello.auth;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -20,13 +21,10 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET = "my-secret";
-
     private final SecretKey key;
 
-    public JwtUtil() {
-//        this.key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
-        this.key = Jwts.SIG.HS256.key().build();
+    public JwtUtil(@Value("${jwt.secret}") String secret) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     public String createToken(String username) {
@@ -40,16 +38,15 @@ public class JwtUtil {
     }
 
     public String getUser(String authorizationHeader) {
+        String token = authorizationHeader.startsWith("Bearer ")
+                ? authorizationHeader.substring(7)
+                : authorizationHeader;
 
-        // Remove "Bearer "
-        String token = authorizationHeader.replace("Bearer ", "");
-
-        Claims claims = Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(key.getEncoded()))
+        return Jwts.parser()
+                .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
-                .getPayload();
-
-        return claims.getSubject();
+                .getPayload()
+                .getSubject();
     }
 }

@@ -3,7 +3,8 @@ spring:
   application:
     name: hello
 
-
+jwt:
+  secret: ${JWT_SECRET}
 
   data:
     redis:management.endpoints.web.exposure.include: "*"
