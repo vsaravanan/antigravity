@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost/api/redis/stock
+  url: https://{{ip}}/api/redis/stock
 
 settings:
   encodeUrl: true

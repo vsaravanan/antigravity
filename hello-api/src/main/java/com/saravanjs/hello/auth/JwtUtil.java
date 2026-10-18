@@ -39,13 +39,13 @@ public class JwtUtil {
                 .compact();
     }
 
-    public static String getUser(String authorizationHeader) {
+    public String getUser(String authorizationHeader) {
 
         // Remove "Bearer "
         String token = authorizationHeader.replace("Bearer ", "");
 
         Claims claims = Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(SECRET.getBytes()))
+                .verifyWith(Keys.hmacShaKeyFor(key.getEncoded()))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();

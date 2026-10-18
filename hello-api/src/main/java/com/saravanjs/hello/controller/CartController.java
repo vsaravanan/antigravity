@@ -15,11 +15,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api")
 public class CartController {
+
+    private final JwtUtil jwtUtil;
+
+    public CartController(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
+    }
+
     @GetMapping("/cart")
     public String cart(
             @RequestHeader("Authorization") String token) {
 
-        String user = JwtUtil.getUser(token);
+        String user = jwtUtil.getUser(token);
 
         return "Hello " + user;
     }
