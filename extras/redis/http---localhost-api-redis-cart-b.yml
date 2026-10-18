@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://localhost/api/redis/cart/b
+  url: http://{{ip}}/api/redis/cart/b
   auth: inherit
 
 settings:
