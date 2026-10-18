@@ -45,17 +45,17 @@ mylog "tag   to ${myimage}"
 podman tag  ${latestimage} "${myimage}"
 
 # required only on first time
-kubectl scale deployment $module --replicas=0 || true
+kubectl -n $ns scale deployment $module --replicas=0 || true
 
 mylog "delete deployment $module"
-kubectl delete deployment $module --ignore-not-found
+kubectl -n $ns delete deployment $module --ignore-not-found
 #kubectl delete service $module-svc --ignore-not-found
 
 mylog "Apply $module manifest"
-kubectl apply -f "$root_path/yaml/$module.yaml"
+kubectl -n $ns apply -f "$root_path/yaml/$module.yaml"
 
 mylog "wait for deployment"
-kubectl wait --for=create deployment/$module --timeout=30s
+kubectl -n $ns wait --for=create deployment/$module --timeout=30s
 
 
 ## required only on first time
@@ -66,7 +66,7 @@ kubectl wait --for=create deployment/$module --timeout=30s
 
 mylog "Wait for rollout to finish"
 # kubectl rollout status deployment/hello-api
-kubectl rollout status deployment/$module
+kubectl -n $ns rollout status deployment/$module
 
 check_status
 

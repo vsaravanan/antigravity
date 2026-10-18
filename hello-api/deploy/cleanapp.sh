@@ -25,6 +25,7 @@ check_status
 module=$1
 service="$module-svc"
 
+
 #podman images | grep "^localhost/${module}" | while read repo tag rest; do
 #    podman rmi "$repo:$tag" || true
 #done
@@ -44,11 +45,11 @@ podman images --format "{{.Repository}}:{{.Tag}}" \
 | xargs -r podman rmi || true
 
 
-kubectl scale deployment $module --replicas=0 || true
+kubectl -n $ns scale deployment $module --replicas=0 || true
 
 sleep 2
 
-kubectl delete svc $service || true
+kubectl -n $ns delete svc $service || true
 
 kubectl delete deployment $module || true
 

@@ -34,17 +34,17 @@ podman images --format "{{.Repository}}:{{.Tag}}" \
 | xargs -r podman rmi || true
 
 
-kubectl scale deployment $module --replicas=0 || true
+kubectl -n $ns scale deployment $module --replicas=0 || true
 
 sleep 2
 
-kubectl delete svc $service || true
+kubectl -n $ns delete svc $service || true
 
-kubectl delete deployment $module || true
+kubectl -n $ns delete deployment $module || true
 
-kubectl delete rs   -l app=$module || true
-kubectl delete pods -l app=$module || true
-kubectl delete all  -l app=$module || true
+kubectl -n $ns delete rs   -l app=$module || true
+kubectl -n $ns delete pods -l app=$module || true
+kubectl -n $ns delete all  -l app=$module || true
 
 kubectl get deploy,svc | grep -E "$module" || true
 

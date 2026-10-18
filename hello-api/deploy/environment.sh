@@ -13,5 +13,6 @@ project_path="$root_path/$module"
 deploy_path="$project_path/deploy"
 registry_url="k8master:5000"
 myimage="$module:latest"
+ns=backend
 
 

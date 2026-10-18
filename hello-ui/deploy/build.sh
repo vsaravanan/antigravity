@@ -65,22 +65,22 @@ podman push --tls-verify=false \
 mylog "tag   to ${myimage}"
 podman tag  ${latestimage} "${myimage}"
 
-kubectl scale deployment $module --replicas=0 || true
+kubectl -n $ns scale deployment $module --replicas=0 || true
 
 mylog "delete deployment $module"
-kubectl delete deployment $module --ignore-not-found
+kubectl -n $ns delete deployment $module --ignore-not-found
 
 mylog "Apply $module manifest"
 kubectl apply -f "$root_path/yaml/$module.yaml"
 
 mylog "wait for deployment"
-kubectl wait --for=create deployment/$module --timeout=30s
+kubectl -n $ns wait --for=create deployment/$module --timeout=30s
 
-kubectl scale deployment $module --replicas=1
+kubectl -n $ns scale deployment $module --replicas=1
 
 mylog "Wait for rollout to finish"
 # kubectl rollout status deployment/hello-ui
-kubectl rollout status deployment/$module
+kubectl -n $ns rollout status deployment/$module
 
 
 check_status

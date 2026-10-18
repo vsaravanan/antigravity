@@ -14,5 +14,6 @@ deploy_path="$project_path/deploy"
 registry_url="k8master:5000"
 myimage_base="$module-base:latest"
 myimage="$module:latest"
+ns=frontend
 
 
