@@ -326,6 +326,10 @@ pulumi stack rm dev
 
           cd /data/antigravity/hello-api/deploy
 
+          cd /data/antigravity/hello-ui/deploy
+
+          cd /data/antigravity/yaml
+
 
           docker start minio postgres adminer
 
