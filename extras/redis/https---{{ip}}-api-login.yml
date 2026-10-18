@@ -1,0 +1,15 @@
+info:
+  name: https://{{ip}}/api/login
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: https://{{ip}}/api/login
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

@@ -1,0 +1,256 @@
+{
+  "info": {
+    "_postman_id": "125bff72-be22-4017-b55c-e0e373d43ac5",
+    "name": "redis",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "691160"
+  },
+  "item": [
+    {
+      "name": "https://{ip}}/api/hello",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://{{ip}}/api/hello",
+          "protocol": "https",
+          "host": [
+            "{{ip}}"
+          ],
+          "path": [
+            "api",
+            "hello"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "https://{{ip}}/api/db",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://{{ip}}/api/db",
+          "protocol": "https",
+          "host": [
+            "{{ip}}"
+          ],
+          "path": [
+            "api",
+            "db"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "https://{{ip}}/api/cart",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://{{ip}}/api/cart",
+          "protocol": "https",
+          "host": [
+            "{{ip}}"
+          ],
+          "path": [
+            "api",
+            "cart"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "https://{{ip}}/api/login",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "https://{{ip}}/api/login",
+          "protocol": "https",
+          "host": [
+            "{{ip}}"
+          ],
+          "path": [
+            "api",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "http://localhost/api/redis/init",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost/api/redis/init",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "api",
+            "redis",
+            "init"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "http://localhost/api/redis/stock",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost/api/redis/stock",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "api",
+            "redis",
+            "stock"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "http://localhost/api/redis/buy/a",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost/api/redis/buy/a",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "api",
+            "redis",
+            "buy",
+            "a"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "http://localhost/api/redis/buy/b",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost/api/redis/buy/b",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "api",
+            "redis",
+            "buy",
+            "b"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "http://localhost/api/redis/cart/a",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost/api/redis/cart/a",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "api",
+            "redis",
+            "cart",
+            "a"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "http://localhost/api/redis/cart/b",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost/api/redis/cart/b",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "path": [
+            "api",
+            "redis",
+            "cart",
+            "b"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "https://{{ip}}/api/cart Copy",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://{{ip}}/api/cart",
+          "protocol": "https",
+          "host": [
+            "{{ip}}"
+          ],
+          "path": [
+            "api",
+            "cart"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
