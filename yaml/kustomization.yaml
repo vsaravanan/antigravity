@@ -6,4 +6,5 @@ resources:
   - hello-api.yaml
   - hello-api-ingress.yaml
   - hello-ui.yaml
+  - hello-ui-ingress.yaml
   

@@ -1,7 +1,48 @@
+# filename : hello-ui.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: frontend
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: hello-ui-data
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes: [ReadWriteOnce]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  local:
+    path: /mnt/hello-ui-data
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values: [k8worker1]
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hello-ui-data
+  namespace: frontend
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: ""
+  volumeName: hello-ui-data
+  resources:
+    requests:
+      storage: 10Gi
+
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hello-ui
+  namespace: frontend
   labels:
     app: hello-ui
 spec:
@@ -31,6 +72,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: hello-ui-svc
+  namespace: frontend
   labels:
     app: hello-ui-svc
 spec:

@@ -1,0 +1,19 @@
+# filename: hello-ui-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hello-ui
+  namespace: frontend
+
+spec:
+  ingressClassName: kong
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: hello-ui-svc
+                port:
+                  number: 80
