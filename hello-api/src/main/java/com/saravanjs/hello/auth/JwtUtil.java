@@ -25,7 +25,8 @@ public class JwtUtil {
     private final SecretKey key;
 
     public JwtUtil() {
-        this.key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+//        this.key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+        this.key = Jwts.SIG.HS256.key().build();
     }
 
     public String createToken(String username) {
