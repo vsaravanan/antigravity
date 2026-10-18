@@ -320,4 +320,17 @@ pulumi stack rm dev
 
    $env:CLAUDE_CONFIG_DIR = "$HOME\.claude-omniroute"; claude
 
+
+          cd /data/k8s-lxd-lab/scripts/kong
+
+
+          cd /data/antigravity/hello-api/deploy
+
+
+          docker start minio postgres adminer
+
+
+          lxc start k8master k8worker1
+
+
 ```

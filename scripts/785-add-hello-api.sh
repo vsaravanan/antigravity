@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 770-add-mysqlpool.sh — 
+# 785-add-hello-api.sh — 
 
 set -euo pipefail
 
@@ -8,10 +8,11 @@ warn() { echo -e "\033[1;33m[WARN]\033[0m  $*"; }
 
 
 set -x
-DEVICE="sds"
-NAME="mysql"
-POOL_NAME="mysqlpool"
-MOUNTPOINT="/srv/mysql-data"
+DEVICE="sdt"
+NAME="hello-api"
+POOL_NAME="${NAME}pool"
+POOL_DATA="${POOL_NAME}/data"
+MOUNTPOINT="/srv/${NAME}-data"
 set +x
 
 # ---------------------------------------------------------------------------
@@ -31,20 +32,33 @@ zpool get autotrim "${POOL_NAME}"
 set +x
 # ---------------------------------------------------------------------------
 log "==> Creating separate datasets: ${NAME} data "
-if ! zfs list "${POOL_NAME}/data" >/dev/null 2>&1; then
+if ! zfs list "${POOL_DATA}" >/dev/null 2>&1; then
     set -x
     sudo mkdir -p "${MOUNTPOINT}"
-    sudo zfs create "${POOL_NAME}/data" -o mountpoint="${MOUNTPOINT}"
+    sudo zfs create "${POOL_DATA}" -o mountpoint="${MOUNTPOINT}"
     set +x
 fi
+
+
+TOOL_POOLS=(${POOL_NAME})
+
+
+# ---------------------------------------------------------------------------
+log "==> Passing every tool-specific directory into k8master for later PersistentVolume use"
+for pool in "${TOOL_POOLS[@]}"; do
+  name="${pool%pool}"
+  log "lxc config device add k8master ${name}-data disk source=/srv/${name}-data path=/mnt/${name}-data"
+  lxc config device add k8master "${name}-data" disk \
+    source="/srv/${name}-data" path="/mnt/${name}-data"
+done
 
 
 set -x
 # 6. Verify
 findmnt -T ${MOUNTPOINT}
-zfs list ${POOL_NAME} ${POOL_NAME}/data
+zfs list ${POOL_NAME} ${POOL_DATA}
 sudo zpool status "${POOL_NAME}"
 
-ll /srv/mysql-data
+ll ${MOUNTPOINT}
 
 
