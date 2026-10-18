@@ -1,7 +1,9 @@
+# filename: configmap.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: app-config
+  namespace: backend
 data:
   database.url: mysql.example.com
   database.user: admin

@@ -36,7 +36,7 @@ spec:
   resources:
     requests:
       storage: 10Gi
-
+---
 
 apiVersion: apps/v1
 kind: Deployment
@@ -47,6 +47,8 @@ metadata:
     app: hello-ui
 spec:
   replicas: 1
+  strategy:
+    type: Recreate  
   selector:
     matchLabels:
       app: hello-ui
@@ -67,6 +69,13 @@ spec:
             value: "3030"
           ports:
             - containerPort: 3030
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: hello-ui-data
 ---
 apiVersion: v1
 kind: Service
@@ -79,6 +88,7 @@ spec:
   type: NodePort
   selector:
     app: hello-ui
+  # sessionAffinity: None # use None for ui session stickiness
   ports:
     - name: http
       port: 3000         # Service port

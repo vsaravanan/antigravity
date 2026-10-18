@@ -2,6 +2,7 @@
 resources:
   - registry.yaml
   - redis.yaml
+  - configmap.yaml
   - hello-api.yaml
   - hello-api-ingress.yaml
   - hello-ui.yaml
