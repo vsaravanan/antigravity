@@ -330,6 +330,8 @@ pulumi stack rm dev
 
           cd /data/antigravity/yaml
 
+          k apply -k .
+
 
           docker start minio postgres adminer
 
@@ -342,9 +344,13 @@ pulumi stack rm dev
 
           clear; kga | egrep "hello|redis"
 
-          https://192.168.100.240/api/hello
-
           http://192.168.50.84:30030/another
+
+          https://192.168.100.240/api/hello
+          
+          http://192.168.100.240/another
+
+
 
 
 ```
