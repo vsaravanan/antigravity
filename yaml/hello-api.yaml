@@ -47,7 +47,7 @@ metadata:
   labels:
     app: hello-api
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: Recreate
   selector:
@@ -61,7 +61,8 @@ spec:
       containers:
         - name: hello-api
           image: k8master:5000/hello-api:latest
-          imagePullPolicy: Always # This ensures it always pulls the latest
+          imagePullPolicy: IfNotPresent # Always # This ensures it always pulls the latest
+          
           env:
             - name: DATABASE_URL
               valueFrom:

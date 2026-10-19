@@ -60,7 +60,7 @@ spec:
       containers:
         - name: hello-ui
           image: k8master:5000/hello-ui:latest
-          # imagePullPolicy: Always  # This ensures it always pulls the latest
+          imagePullPolicy: IfNotPresent # Always # This ensures it always pulls the latest
           # args:
           #   - "--port"
           #   - "3030"
