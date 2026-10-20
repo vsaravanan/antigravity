@@ -1,0 +1,46 @@
+{
+    "realm": "matrix-test",
+    "enabled": true,
+    "roles": {
+        "realm": [
+            {
+                "name": "maker",
+                "description": "Can create drafts"
+            },
+            {
+                "name": "checker",
+                "description": "Can approve drafts"
+            }
+        ]
+    },
+    "users": [
+        {
+            "username": "kannan",
+            "enabled": true,
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "password",
+                    "temporary": false
+                }
+            ],
+            "realmRoles": [
+                "maker"
+            ]
+        },
+        {
+            "username": "rakesh",
+            "enabled": true,
+            "credentials": [
+                {
+                    "type": "password",
+                    "value": "password",
+                    "temporary": false
+                }
+            ],
+            "realmRoles": [
+                "checker"
+            ]
+        }
+    ]
+}

@@ -130,4 +130,45 @@ Waiting for daemon set "cilium" rollout to finish: 0 of 2 updated pods are avail
 Waiting for daemon set "cilium" rollout to finish: 1 of 2 updated pods are available...
 daemon set "cilium" successfully rolled out
 
+============================
 
+Kong LoadBalancer IP 192.168.100.240 is not working
+
+[192.168.50.84:30030/another](http://192.168.50.84:30030/another) is working 
+[192.168.100.240](https://192.168.100.240/another) is not working, but yesterday it was working
+
+
+kubectl -n kube-system rollout restart daemonset cilium
+kubectl -n kube-system rollout status daemonset cilium
+
+
+viswar@k8s:~$ kubectl -n kube-system exec ds/cilium -- cilium-dbg service list | grep 240
+22   192.168.100.240:80/TCP      LoadBalancer   1 => 10.244.1.143:8000/TCP (active)
+23   192.168.100.240:80/TCP/i    LoadBalancer   1 => 10.244.1.143:8000/TCP (active)
+24   192.168.100.240:443/TCP     LoadBalancer   1 => 10.244.1.143:8443/TCP (active)
+25   192.168.100.240:443/TCP/i   LoadBalancer   1 => 10.244.1.143:8443/TCP (active)
+
+
+kubectl -n kube-system exec ds/cilium -- cilium-dbg bpf lb list | grep 240
+
+kubectl -n kube-system exec ds/cilium -- cilium-dbg status --verbose
+
+Modules Health:        Stopped(0) Degraded(0) OK(113)
+  agent
+  ├── controlplane
+  │   ├── cgroup-manager
+  │   │   └── job-process-pod-events                              [OK] Running (3m47s, x1)
+  │   ├── cilium-agent-dynamic-config
+  │   │   └── job-k8s-reflector-cilium-configs-cm-cilium-config-kube-system      [OK] 167 upserted, 0 deleted, 167 total objects (3m47s, x1)
+  │   ├── ciliumenvoyconfig
+  │   │   ├── job-node-labels                                     [OK] Running (3m47s, x1)
+  │   │   ├── job-reconcile                                       [OK] OK, 0 object(s) (3m47s, x2)
+  │   │   └── job-refresh                                         [OK] Next refresh in 30m0s (3m47s, x1)
+  │   ├── config-drift-checker
+
+
+ kubectl -n kube-system logs ds/cilium --since=30m | grep -iE "error|warn|lb|service"
+
+
+ ====================================
+ 
