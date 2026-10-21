@@ -16,8 +16,8 @@ $K config credentials --server http://localhost:8080/auth --realm master --user 
 $K create realms -s realm=$R -s enabled=true
 
 # roles
-$K create roles -r $R -s name=viewer
-$K create roles -r $R -s name=editor
+$K create roles -r $R -s name=maker
+$K create roles -r $R -s name=checker
 
 # users, each with a password
 for u in alice bob carol; do
@@ -26,5 +26,6 @@ for u in alice bob carol; do
 done
 
 # direct roles (alice gets none)
-$K add-roles -r $R --uusername bob   --rolename viewer
-$K add-roles -r $R --uusername carol --rolename editor
+$K add-roles -r $R --uusername alice   --rolename maker
+$K add-roles -r $R --uusername bob   --rolename maker
+$K add-roles -r $R --uusername carol --rolename checker
