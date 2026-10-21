@@ -2,9 +2,31 @@ server.port: ${SERVER_PORT:7000}
 spring:
   application:
     name: hello
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: 
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 
 jwt:
   secret: ${JWT_SECRET}
+
+# keycloak:
+#   auth-server-url: ${KEYCLOAK_URL:http://localhost:8080}
+#   realm: ${KEYCLOAK_REALM:matrix-test}
+#   admin:
+#     username: ${KEYCLOAK_ADMIN_USER:admin}
+#     password: ${KEYCLOAK_ADMIN_PASSWORD:admin123}
+#     client-id: admin-cli
 
   data:
     redis:management.endpoints.web.exposure.include: "*"
