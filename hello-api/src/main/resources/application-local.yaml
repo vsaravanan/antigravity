@@ -1,1 +1,5 @@
 app.redis.enabled: true
+jwt:
+  secret: Qk1DTVlIT3ovR2dzR3c4RjVKQVErNHZodlErM2YxanVmRGJFZmdkQTR6UUw5Y3RQK1JpUHc1S0VjV0pIRHNtZg==
+
+HOSTNAME: local
