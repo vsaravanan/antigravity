@@ -5,7 +5,11 @@ info:
 
 http:
   method: GET
-  url: https://{{ip}}/api/hello
+  url: http://{{ip}}/api/hello
+  auth:
+    type: basic
+    username: kannan
+    password: kannan
 
 settings:
   encodeUrl: true

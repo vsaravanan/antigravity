@@ -3,6 +3,7 @@ package com.saravanjs.hello.controller;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,6 +26,7 @@ public class HelloController {
     @Value("${HOSTNAME}")
     private String podName;
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/hello")
     public ResponseEntity<Message> sayHello() {
         String msg = "Testing from " + podName;
@@ -33,6 +35,7 @@ public class HelloController {
         return ResponseEntity.ok(message);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/db")
     public ResponseEntity<Db> getDb() {
 

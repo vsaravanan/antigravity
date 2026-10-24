@@ -1,0 +1,15 @@
+# filename: redis-tcpingress.yaml
+
+apiVersion: configuration.konghq.com/v1beta1
+kind: TCPIngress
+metadata:
+  name: redis
+  namespace: redis
+  annotations:
+    kubernetes.io/ingress.class: kong
+spec:
+  rules:
+    - port: 6379
+      backend:
+        serviceName: redis-svc
+        servicePort: 6379
