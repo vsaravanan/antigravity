@@ -11,13 +11,12 @@ package com.saravanjs.hello.service;
 import com.saravanjs.hello.model.ProductRecord;
 import com.saravanjs.hello.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
 import java.util.stream.IntStream;
 
-@Profile("!local")
+//@Profile("!local")
 @Service
 @RequiredArgsConstructor
 public class RedisService {
