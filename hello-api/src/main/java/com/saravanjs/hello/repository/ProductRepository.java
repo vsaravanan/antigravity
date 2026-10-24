@@ -5,6 +5,7 @@ import com.saravanjs.hello.model.ProductRecord;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +20,7 @@ import java.util.concurrent.TimeUnit;
  * @class ProductRepository
  */
 
+@Profile("!local")
 @Repository
 @RequiredArgsConstructor
 public class ProductRepository {
