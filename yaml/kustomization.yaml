@@ -7,4 +7,5 @@ resources:
   - hello-api-ingress.yaml
   - hello-ui.yaml
   - hello-ui-ingress.yaml
+  - redis-tcpingress.yaml
   
