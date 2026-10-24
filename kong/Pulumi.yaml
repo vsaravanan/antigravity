@@ -68,6 +68,10 @@ resources:
           proxy:
             type: LoadBalancer
             externalTrafficPolicy: Local
+            stream:
+              - containerPort: 6379
+                servicePort: 6379
+                parameters: []
 
   # Drop Kong-fronting for raw Postgres. Remove the stream/stream_listen values
   # and the TCPIngress object, keep direct-IP access for psql/Keycloak,
