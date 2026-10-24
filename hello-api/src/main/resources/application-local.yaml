@@ -4,7 +4,8 @@ jwt:
 
 HOSTNAME: local
 
-
+spring.data.redis.host: 192.168.50.84
+spring.data.redis.port: 30079
 
 #app.redis.enabled: false
 #
