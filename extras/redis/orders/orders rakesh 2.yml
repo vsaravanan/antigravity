@@ -1,0 +1,22 @@
+info:
+  name: orders rakesh
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: "{{ip}}/api/orders"
+  body:
+    type: json
+    data: '{"productName":"Laptop","quantity":2}'
+  auth:
+    type: basic
+    username: rakesh
+    password: rakesh
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

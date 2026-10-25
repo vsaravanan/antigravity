@@ -1,0 +1,19 @@
+info:
+  name: orders maker kannan
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{ip}}/api/orders/maker"
+  auth:
+    type: basic
+    username: kannan
+    password: kannan
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false

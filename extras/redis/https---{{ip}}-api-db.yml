@@ -5,7 +5,11 @@ info:
 
 http:
   method: GET
-  url: https://{{ip}}/api/db
+  url: "{{ip}}/api/db"
+  auth:
+    type: basic
+    username: rakesh
+    password: rakesh
 
 settings:
   encodeUrl: true

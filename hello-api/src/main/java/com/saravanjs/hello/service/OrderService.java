@@ -31,6 +31,9 @@ public class OrderService {
     }
 
     public List<Order> getOrdersByMaker(String username) {
+        if  (username == null) {
+            username = getCurrentUsername();
+        }
         return orderRepository.findByCreatedBy(username);
     }
 

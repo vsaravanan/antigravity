@@ -1,0 +1,9 @@
+singleServerConfig:
+  address: "redis://192.168.100.240:6379"
+  connectionMinimumIdleSize: 2
+  connectionPoolSize: 8
+  subscriptionConnectionMinimumIdleSize: 1
+  subscriptionConnectionPoolSize: 2
+  connectTimeout: 10000
+  timeout: 5000
+  retryAttempts: 3
