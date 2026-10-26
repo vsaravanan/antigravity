@@ -84,6 +84,10 @@ spec:
                 secretKeyRef:
                   name: jwt-secret
                   key: secret
+            
+            - name: SPRING_PROFILES_ACTIVE
+              value: k8s
+
           ports:
             - containerPort: 8000
           volumeMounts:
